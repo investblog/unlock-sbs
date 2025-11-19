@@ -105,57 +105,35 @@ function toHost(input){ return toHref(input).host; }
     style.id = PANEL_STYLE_ID;
     style.textContent = `
       :root {
-        --ah-bg: #0C1019;
-        --ah-card: #101625;
+        --ah-bg: #050812;
+        --ah-bg-gradient: radial-gradient(circle at top left, #111827 0, #050812 50%);
+        --ah-card: #0b1020;
+        --ah-card-soft: #101625;
         --ah-border-subtle: rgba(255,255,255,.04);
         --ah-border-strong: #252c3c;
         --ah-text: #E7E9F0;
         --ah-muted: #9BA3B4;
         --ah-accent: #5E8BFF;
-        --ah-radius: 10px;
+        --ah-accent-soft: rgba(94,139,255,.16);
+        --ah-radius: 12px;
         --ah-radius-pill: 999px;
-        --ah-shadow: 0 10px 30px rgba(0,0,0,.35);
+        --ah-shadow-soft: 0 18px 45px rgba(0,0,0,.55);
         --ah-font: system-ui, -apple-system, "Segoe UI", sans-serif;
+        --ah-font-size: 13px;
       }
       #ah-serp {
         position: fixed;
         top: 16px;
         right: 16px;
         z-index: 999999;
-        background: var(--ah-card);
-        color: var(--ah-text);
-        border-radius: var(--ah-radius);
-        border: 1px solid var(--ah-border-strong);
-        box-shadow: var(--ah-shadow);
         font-family: var(--ah-font);
-        font-size: 13px;
-        line-height: 1.4;
-        padding: 8px 10px;
+        font-size: var(--ah-font-size);
+        color: var(--ah-text);
         display: flex;
         flex-direction: column;
         align-items: flex-end;
         gap: 6px;
         min-width: 0;
-      }
-      #ah-serp .ah-dismiss {
-        align-self: flex-end;
-        width: 22px;
-        height: 22px;
-        border-radius: var(--ah-radius-pill);
-        border: 1px solid var(--ah-border-subtle);
-        background: rgba(10,14,24,.85);
-        color: var(--ah-muted);
-        font-size: 14px;
-        line-height: 1;
-        cursor: pointer;
-      }
-      #ah-serp .ah-dismiss:hover { color: var(--ah-text); border-color: rgba(94,139,255,.4); }
-      #ah-serp .ah-dismiss:focus-visible { outline: 2px solid rgba(94,139,255,.4); outline-offset: 2px; }
-      #ah-serp:not(.ah-serp-expanded) {
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        padding: 0;
       }
       #ah-serp * {
         box-sizing: border-box;
@@ -166,7 +144,37 @@ function toHost(input){ return toHref(input).host; }
         border: none;
         padding: 0;
         color: inherit;
+        font: inherit;
       }
+      #ah-serp .ah-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: var(--ah-radius-pill);
+        border: 1px solid transparent;
+        cursor: pointer;
+        font-weight: 600;
+        transition: border-color .15s ease, color .15s ease, background .15s ease, filter .15s ease;
+      }
+      #ah-serp .ah-btn:focus-visible { outline: 2px solid var(--ah-accent); outline-offset: 2px; }
+      #ah-serp .ah-btn-outline {
+        background: transparent;
+        border-color: var(--ah-border-strong);
+        color: var(--ah-text);
+      }
+      #ah-serp .ah-btn-outline:hover {
+        color: var(--ah-accent);
+        border-color: var(--ah-accent);
+        background: var(--ah-accent-soft);
+      }
+      #ah-serp .ah-btn-ghost {
+        background: rgba(255,255,255,.03);
+        border-color: var(--ah-border-subtle);
+        color: var(--ah-muted);
+      }
+      #ah-serp .ah-btn-ghost:hover { color: var(--ah-text); border-color: rgba(94,139,255,.4); }
       #ah-serp .ah-icon-wrap {
         display: inline-flex;
         width: 16px;
@@ -181,17 +189,15 @@ function toHost(input){ return toHref(input).host; }
         padding: 4px 9px;
         border-radius: var(--ah-radius-pill);
         border: 1px solid rgba(255,255,255,.08);
-        background: rgba(10,14,24,.9);
+        background: rgba(10, 14, 24, .9);
         cursor: pointer;
         backdrop-filter: blur(8px);
         color: var(--ah-text);
         font-weight: 600;
-        transition: border-color .2s ease, background .2s ease, transform .2s ease;
       }
       #ah-serp .ah-chip:hover {
-        border-color: rgba(94,139,255,.6);
-        background: rgba(15,20,33,.95);
-        transform: translateY(-1px);
+        border-color: rgba(94, 139, 255, .6);
+        background: rgba(15, 20, 33, .95);
       }
       #ah-serp .ah-chip:focus-visible { outline: 2px solid var(--ah-accent); outline-offset: 2px; }
       #ah-serp .ah-chip-text {
@@ -205,28 +211,36 @@ function toHost(input){ return toHref(input).host; }
         border-radius: var(--ah-radius-pill);
         font-size: 11px;
         line-height: 1;
-        background: rgba(94,139,255,.16);
+        background: var(--ah-accent-soft);
         color: #c4d4ff;
-        text-align: center;
       }
-      #ah-serp .ah-panel {
-        width: min(520px, calc(100vw - 32px));
-        background: var(--ah-card);
-        color: var(--ah-text);
-        border: 1px solid var(--ah-border-strong);
+      #ah-serp .ah-dismiss {
+        margin-bottom: 6px;
+        align-self: flex-end;
+        width: 24px;
+        height: 24px;
+      }
+      #ah-serp .ah-serp-card {
+        margin-top: 8px;
+        background: var(--ah-card-soft);
         border-radius: var(--ah-radius);
-        padding: 14px;
-        box-shadow: var(--ah-shadow);
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
+        border: 1px solid var(--ah-border-subtle);
+        box-shadow: var(--ah-shadow-soft);
+        padding: 10px 12px;
+        max-width: min(360px, calc(100vw - 32px));
+        width: 100%;
       }
       #ah-serp .ah-panel-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
+      }
+      #ah-serp .ah-panel-close {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--ah-radius);
       }
       #ah-serp .ah-panel-title {
         display: inline-flex;
@@ -237,21 +251,9 @@ function toHost(input){ return toHref(input).host; }
         letter-spacing: .04em;
         color: var(--ah-muted);
       }
-      #ah-serp .ah-panel-title .ah-icon-wrap { width: 18px; height: 18px; }
-      #ah-serp .ah-panel-close {
-        width: 28px;
-        height: 28px;
-        border-radius: var(--ah-radius);
-        border: 1px solid var(--ah-border-subtle);
-        background: rgba(255,255,255,.04);
-        color: var(--ah-muted);
-        cursor: pointer;
-      }
-      #ah-serp .ah-panel-close:hover { color: var(--ah-text); border-color: rgba(94,139,255,.4); }
-      #ah-serp .ah-panel-close:focus-visible { outline: 2px solid rgba(94,139,255,.4); outline-offset: 2px; }
       #ah-serp .ah-section {
         display: none;
-        margin-top: 6px;
+        margin-top: 8px;
         padding-top: 8px;
         border-top: 1px solid var(--ah-border-subtle);
       }
@@ -265,11 +267,6 @@ function toHost(input){ return toHref(input).host; }
         text-transform: uppercase;
         letter-spacing: .04em;
         color: var(--ah-muted);
-      }
-      #ah-serp .ah-section-note {
-        font-size: 12px;
-        color: var(--ah-muted);
-        margin-bottom: 4px;
       }
       #ah-serp .ah-pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
       #ah-serp .ah-pill {
@@ -302,31 +299,20 @@ function toHost(input){ return toHref(input).host; }
         height: 16px;
         object-fit: cover;
       }
-      #ah-serp .ah-panel-body { font-size: 13px; }
-      #ah-serp .ah-tip { margin: 4px 0; color: var(--ah-muted); }
+      #ah-serp .ah-panel-body { font-size: var(--ah-font-size); color: var(--ah-muted); }
+      #ah-serp .ah-tip { margin: 4px 0; }
       #ah-serp .ah-inline-link { color: var(--ah-accent); text-decoration: none; }
       #ah-serp .ah-inline-link:hover { text-decoration: underline; }
       #ah-serp .ah-panel-actions {
-        margin-top: 6px;
+        margin-top: 10px;
         padding-top: 10px;
         border-top: 1px solid var(--ah-border-subtle);
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
       }
-      #ah-serp .ah-panel-actions button {
-        padding: 6px 12px;
-        border-radius: var(--ah-radius-pill);
-        border: 1px solid var(--ah-border-strong);
-        background: rgba(255,255,255,.02);
-        color: var(--ah-text);
-        cursor: pointer;
-        transition: border-color .15s ease, color .15s ease, background .15s ease;
-      }
-      #ah-serp .ah-panel-actions button:hover { border-color: var(--ah-accent); color: var(--ah-accent); }
-      #ah-serp .ah-panel-actions button:focus-visible { outline: 2px solid rgba(94,139,255,.4); outline-offset: 2px; }
       #ah-serp.ah-serp-expanded .ah-chip { display: none; }
-      #ah-serp:not(.ah-serp-expanded) .ah-panel { display: none; }
+      #ah-serp:not(.ah-serp-expanded) .ah-serp-card { display: none; }
       #ah-serp-toast {
         position: fixed;
         top: 16px;
@@ -337,13 +323,13 @@ function toHost(input){ return toHref(input).host; }
         border: 1px solid var(--ah-border-strong);
         border-radius: var(--ah-radius);
         padding: 8px 12px;
-        box-shadow: var(--ah-shadow);
+        box-shadow: var(--ah-shadow-soft);
         opacity: 0;
         transform: translateY(-8px);
         transition: opacity .16s ease, transform .16s ease;
         pointer-events: none;
         font-family: var(--ah-font);
-        font-size: 13px;
+        font-size: var(--ah-font-size);
       }
       #ah-serp-toast.visible { opacity: 1; transform: translateY(0); }
     `;
@@ -433,7 +419,7 @@ function toHost(input){ return toHref(input).host; }
     const chipLabel = _('chipLabel', 'Unlock.SBS');
       box.innerHTML = `
         <div id="ah-serp">
-          <button id="ah-dismiss" class="ah-dismiss" type="button" aria-label="${_('serpHide','Hide')}">×</button>
+          <button id="ah-dismiss" class="ah-btn ah-btn-ghost ah-dismiss" type="button" aria-label="${_('serpHide','Hide')}">×</button>
           <button id="ah-chip" class="ah-chip" type="button" aria-label="${_('serpPanelTitle','Search tips')}">
             <span class="ah-icon-wrap" aria-hidden="true">${BRAND_ICON}</span>
             <span class="ah-chip-text">
@@ -441,17 +427,17 @@ function toHost(input){ return toHref(input).host; }
               <span class="ah-chip-count" id="ah-chip-count">0</span>
             </span>
           </button>
-          <div class="ah-panel">
+          <div class="ah-serp-card">
             <div class="ah-panel-header">
               <div class="ah-panel-title"><span class="ah-icon-wrap" aria-hidden="true">${BRAND_ICON}</span><span>${_('serpPanelTitle','Search tips')}</span></div>
-              <button id="ah-close-x" class="ah-panel-close" type="button" aria-label="${_('serpHide','Hide')}">×</button>
+              <button id="ah-close-x" class="ah-btn ah-btn-ghost ah-panel-close" type="button" aria-label="${_('serpHide','Hide')}">×</button>
             </div>
           <div id="ah-mirrors" class="ah-section"></div>
           <div id="ah-bookmarks" class="ah-section"></div>
           <div id="ah-body" class="ah-panel-body"></div>
           <div id="ah-actions" class="ah-panel-actions">
-            <button id="ah-settings" type="button">${_('settingsBtn','Settings')}</button>
-            <button id="ah-close" type="button">${_('serpHide','Hide')}</button>
+            <button id="ah-settings" class="ah-btn ah-btn-outline" type="button">${_('settingsBtn','Settings')}</button>
+            <button id="ah-close" class="ah-btn ah-btn-outline" type="button">${_('serpHide','Hide')}</button>
           </div>
         </div>
       </div>`;
