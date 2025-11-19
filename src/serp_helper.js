@@ -101,8 +101,6 @@ function toHost(input){ return toHref(input).host; }
 
   const PANEL_STYLE_ID = 'ah-serp-style';
   const TOAST_ID = 'ah-serp-toast';
-  let __serpDismissed = false;
-
   function normalizePanelMode(mode){
     if (mode === 'icon' || mode === 'auto') return mode;
     return 'chip';
@@ -130,7 +128,7 @@ function toHost(input){ return toHref(input).host; }
         --ah-font: system-ui, -apple-system, "Segoe UI", sans-serif;
         --ah-font-size: 13px;
       }
-      #ah-serp {
+      #ah-root {
         position: fixed;
         top: 64px;
         right: 86px;
@@ -144,18 +142,18 @@ function toHost(input){ return toHref(input).host; }
         gap: 6px;
         min-width: 0;
       }
-      #ah-serp * {
+      #ah-root * {
         box-sizing: border-box;
         font-family: inherit;
       }
-      #ah-serp button {
+      #ah-root button {
         background: none;
         border: none;
         padding: 0;
         color: inherit;
         font: inherit;
       }
-      #ah-serp .ah-btn {
+      #ah-root .ah-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -167,23 +165,23 @@ function toHost(input){ return toHref(input).host; }
         font-weight: 600;
         transition: border-color .15s ease, color .15s ease, background .15s ease, filter .15s ease;
       }
-      #ah-serp .ah-btn:focus-visible { outline: 2px solid var(--ah-accent); outline-offset: 2px; }
-      #ah-serp .ah-btn-outline {
+      #ah-root .ah-btn:focus-visible { outline: 2px solid var(--ah-accent); outline-offset: 2px; }
+      #ah-root .ah-btn-outline {
         background: transparent;
         border-color: var(--ah-border-strong);
         color: var(--ah-text);
       }
-      #ah-serp .ah-btn-outline:hover {
+      #ah-root .ah-btn-outline:hover {
         color: var(--ah-accent);
         border-color: var(--ah-accent);
         background: var(--ah-accent-soft);
       }
-      #ah-serp .ah-btn-ghost {
+      #ah-root .ah-btn-ghost {
         background: rgba(255,255,255,.03);
         border-color: var(--ah-border-subtle);
         color: var(--ah-muted);
       }
-      #ah-serp .ah-btn-ghost:hover { color: var(--ah-text); border-color: rgba(94,139,255,.4); }
+      #ah-root .ah-btn-ghost:hover { color: var(--ah-text); border-color: rgba(94,139,255,.4); }
       .ah-icon {
         display: inline-flex;
         width: 16px;
@@ -203,7 +201,7 @@ function toHost(input){ return toHref(input).host; }
       .ah-icon--ok    { color: #25D0A4; }
       .ah-icon--warn  { color: #FF6B6B; }
       .ah-icon--muted { color: var(--ah-muted); }
-      #ah-serp .ah-chip {
+      #ah-root .ah-chip {
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -216,17 +214,17 @@ function toHost(input){ return toHref(input).host; }
         color: var(--ah-text);
         font-weight: 600;
       }
-      #ah-serp .ah-chip:hover {
+      #ah-root .ah-chip:hover {
         border-color: rgba(94, 139, 255, .6);
         background: rgba(15, 20, 33, .95);
       }
-      #ah-serp .ah-chip:focus-visible { outline: 2px solid var(--ah-accent); outline-offset: 2px; }
-      #ah-serp .ah-chip-text {
+      #ah-root .ah-chip:focus-visible { outline: 2px solid var(--ah-accent); outline-offset: 2px; }
+      #ah-root .ah-chip-text {
         display: inline-flex;
         align-items: center;
         gap: 6px;
       }
-      #ah-serp .ah-chip-count {
+      #ah-root .ah-chip-count {
         min-width: 20px;
         padding: 2px 6px;
         border-radius: var(--ah-radius-pill);
@@ -235,13 +233,8 @@ function toHost(input){ return toHref(input).host; }
         background: var(--ah-accent-soft);
         color: #c4d4ff;
       }
-      #ah-serp .ah-dismiss {
-        margin-bottom: 6px;
-        align-self: flex-end;
-        width: 24px;
-        height: 24px;
-      }
-      #ah-serp .ah-serp-card {
+      #ah-root .ah-panel {
+        display: none;
         margin-top: 8px;
         background: var(--ah-card);
         border-radius: var(--ah-radius);
@@ -251,19 +244,20 @@ function toHost(input){ return toHref(input).host; }
         max-width: 90vw;
         width: 360px;
       }
-      #ah-serp .ah-panel-header {
+      #ah-root.ah-root--open .ah-panel { display: block; }
+      #ah-root .ah-panel-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
         margin-bottom: 8px;
       }
-      #ah-serp .ah-panel-close {
+      #ah-root .ah-panel-close {
         width: 28px;
         height: 28px;
         border-radius: var(--ah-radius);
       }
-      #ah-serp .ah-panel-title {
+      #ah-root .ah-panel-title {
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -272,14 +266,14 @@ function toHost(input){ return toHref(input).host; }
         letter-spacing: .04em;
         color: var(--ah-text);
       }
-      #ah-serp .ah-section {
+      #ah-root .ah-section {
         display: none;
         margin-top: 8px;
         padding-top: 8px;
         border-top: 1px solid var(--ah-border-subtle);
       }
-      #ah-serp .ah-section.active { display: block; }
-      #ah-serp .ah-header {
+      #ah-root .ah-section.active { display: block; }
+      #ah-root .ah-header {
         display: flex;
         align-items: center;
         gap: 8px;
@@ -289,8 +283,8 @@ function toHost(input){ return toHref(input).host; }
         letter-spacing: .04em;
         color: var(--ah-muted);
       }
-      #ah-serp .ah-pill-row { display: flex; flex-wrap: wrap; gap: 10px; }
-      #ah-serp .ah-pill {
+      #ah-root .ah-pill-row { display: flex; flex-wrap: wrap; gap: 10px; }
+      #ah-root .ah-pill {
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -303,9 +297,9 @@ function toHost(input){ return toHref(input).host; }
         font-size: 12px;
         transition: border-color .15s ease, color .15s ease, background .15s ease;
       }
-      #ah-serp .ah-pill:hover { border-color: rgba(94,139,255,.8); color: #dbe4ff; }
-      #ah-serp .ah-pill-rich { background: rgba(255,255,255,.04); }
-      #ah-serp .ah-pill-label {
+      #ah-root .ah-pill:hover { border-color: rgba(94,139,255,.8); color: #dbe4ff; }
+      #ah-root .ah-pill-rich { background: rgba(255,255,255,.04); }
+      #ah-root .ah-pill-label {
         display: inline-flex;
         align-items: center;
         max-width: 220px;
@@ -313,19 +307,19 @@ function toHost(input){ return toHref(input).host; }
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-      #ah-serp .ah-pill-arrow { color: var(--ah-muted); font-size: 12px; }
-      #ah-serp .ah-pill-icon {
+      #ah-root .ah-pill-arrow { color: var(--ah-muted); font-size: 12px; }
+      #ah-root .ah-pill-icon {
         border-radius: calc(var(--ah-radius) / 2);
         width: 16px;
         height: 16px;
         object-fit: cover;
       }
-      #ah-serp .ah-section-note { margin: 0 0 6px; color: var(--ah-muted); }
-      #ah-serp .ah-panel-body { font-size: var(--ah-font-size); color: var(--ah-text); }
-      #ah-serp .ah-tip { margin: 4px 0; }
-      #ah-serp .ah-inline-link { color: var(--ah-accent); text-decoration: none; }
-      #ah-serp .ah-inline-link:hover { text-decoration: underline; }
-      #ah-serp .ah-panel-actions {
+      #ah-root .ah-section-note { margin: 0 0 6px; color: var(--ah-muted); }
+      #ah-root .ah-panel-body { font-size: var(--ah-font-size); color: var(--ah-text); }
+      #ah-root .ah-tip { margin: 4px 0; }
+      #ah-root .ah-inline-link { color: var(--ah-accent); text-decoration: none; }
+      #ah-root .ah-inline-link:hover { text-decoration: underline; }
+      #ah-root .ah-panel-actions {
         margin-top: 10px;
         padding-top: 10px;
         border-top: 1px solid var(--ah-border-subtle);
@@ -335,8 +329,7 @@ function toHost(input){ return toHref(input).host; }
         justify-content: space-between;
         align-items: center;
       }
-      #ah-serp.ah-serp-expanded .ah-chip { display: none; }
-      #ah-serp:not(.ah-serp-expanded) .ah-serp-card { display: none; }
+      #ah-root.ah-root--inline-hidden { display: none; }
       #ah-serp-toast {
         position: fixed;
         top: 16px;
@@ -382,9 +375,10 @@ function toHost(input){ return toHref(input).host; }
     showToast(_('serpNoTips','No tips right now'));
   }
 
-  function setPanelExpanded(el, expanded){ if (!el) return; if (expanded) el.classList.add('ah-serp-expanded'); else el.classList.remove('ah-serp-expanded'); }
+  function setPanelExpanded(el, expanded){ if (!el) return; if (expanded) el.classList.add('ah-root--open'); else el.classList.remove('ah-root--open'); }
   function collapsePanel(el){ setPanelExpanded(el, false); }
   function expandPanel(el){ setPanelExpanded(el, true); }
+  function togglePanel(el){ if (!el) return; setPanelExpanded(el, !el.classList.contains('ah-root--open')); }
   function updateChipCount(el, count){ if (!el) return; const target = el.querySelector('#ah-chip-count'); if (target) target.textContent = String(Math.max(0, parseInt(count,10)||0)); }
   function setBadgeCount(count){
       try {
@@ -441,42 +435,39 @@ function toHost(input){ return toHref(input).host; }
 
   // --- UI helpers ---
   function injectPanel() {
-    if (__serpDismissed) return null;
     ensurePanelStyles();
-    let el = document.getElementById('ah-serp');
+    let el = document.getElementById('ah-root');
     if (el) return el;
     const box = document.createElement('div');
     const chipLabel = _('chipLabel', 'Unlock.SBS');
       box.innerHTML = `
-        <div id="ah-serp">
-          <button id="ah-dismiss" class="ah-btn ah-btn-ghost ah-dismiss" type="button" aria-label="${_('serpHide','Hide')}">×</button>
+        <div id="ah-root" class="ah-root">
           <button id="ah-chip" class="ah-chip" type="button" aria-label="${_('serpPanelTitle','Search tips')}">
             <span class="ah-chip-text">
               <span>${chipLabel}</span>
               <span class="ah-chip-count" id="ah-chip-count">0</span>
             </span>
           </button>
-          <div class="ah-serp-card">
+          <div class="ah-panel">
             <div class="ah-panel-header">
               <div class="ah-panel-title"><span>${_('serpPanelTitle','Search tips')}</span></div>
               <button id="ah-close-x" class="ah-btn ah-btn-ghost ah-panel-close" type="button" aria-label="${_('serpHide','Hide')}">×</button>
             </div>
-          <div id="ah-mirrors" class="ah-section"></div>
-          <div id="ah-bookmarks" class="ah-section"></div>
-          <div id="ah-body" class="ah-panel-body"></div>
-          <div id="ah-actions" class="ah-panel-actions">
-            <button id="ah-settings" class="ah-btn ah-btn-outline" type="button">${_('settingsBtn','Settings')}</button>
-            <button id="ah-close" class="ah-btn ah-btn-outline" type="button">${_('serpHide','Hide')}</button>
+            <div id="ah-mirrors" class="ah-section"></div>
+            <div id="ah-bookmarks" class="ah-section"></div>
+            <div id="ah-body" class="ah-panel-body"></div>
+            <div id="ah-actions" class="ah-panel-actions">
+              <button id="ah-settings" class="ah-btn ah-btn-outline" type="button">${_('settingsBtn','Settings')}</button>
+              <button id="ah-close" class="ah-btn ah-btn-outline" type="button">${_('serpHide','Hide')}</button>
+            </div>
           </div>
-        </div>
-      </div>`;
+        </div>`;
     el = box.firstElementChild;
     document.documentElement.appendChild(el);
-    const chip = el.querySelector('#ah-chip'); if (chip) chip.addEventListener('click', () => expandPanel(el));
+    const chip = el.querySelector('#ah-chip'); if (chip) chip.addEventListener('click', () => togglePanel(el));
     const collapse = () => collapsePanel(el);
     const cx = el.querySelector('#ah-close-x'); if (cx) cx.addEventListener('click', collapse);
     const closeBtn = el.querySelector('#ah-close'); if (closeBtn) closeBtn.addEventListener('click', collapse);
-    const dismissBtn = el.querySelector('#ah-dismiss'); if (dismissBtn) dismissBtn.addEventListener('click', () => dismissPanel(el));
     const sb = el.querySelector('#ah-settings');
     if (sb) sb.addEventListener('click', ()=>{ try{ if(hasRuntime()) chrome.runtime.sendMessage({type:'ah:open-settings'}); }catch(e){} });
     const chipText = el.querySelector('.ah-chip-text');
@@ -484,11 +475,6 @@ function toHost(input){ return toHref(input).host; }
     const panelTitle = el.querySelector('.ah-panel-title');
     if (panelTitle) panelTitle.prepend(createIcon('brand', 'sm', 'main'));
     return el;
-  }
-  function dismissPanel(el) {
-    __serpDismissed = true;
-    setBadgeCount(0);
-    try { if (el && el.remove) el.remove(); } catch(_) {}
   }
   function escapeHtml(str) {
     return String(str || '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch] || ch));
@@ -520,7 +506,6 @@ function toHost(input){ return toHref(input).host; }
   let lastUrl = location.href;
   function renderTips() {
     if (!isSerpHost()) return;
-    if (__serpDismissed) { setBadgeCount(0); return; }
     lastUrl = location.href;
       getPrefsAndAlternates((data) => {
         __prefs = data.prefs || DEFAULT_PREFS;
@@ -540,7 +525,7 @@ function toHost(input){ return toHref(input).host; }
         query: q
       };
 
-      const existing = document.getElementById('ah-serp');
+      const existing = document.getElementById('ah-root');
       if (!matchedKeys.length) { setBadgeCount(0); sendSerpHints(hintsPayload); if (existing) existing.remove(); return; }
 
       const panelMode = normalizePanelMode((__prefs && __prefs.panelMode) || 'chip');
@@ -596,9 +581,8 @@ function toHost(input){ return toHref(input).host; }
         });
       }
 
-      if (!__prefs || __prefs.showSerpBookmarks !== false) {
-        fetchBookmarksOnce().then(list => {
-          if (__serpDismissed) return;
+        if (!__prefs || __prefs.showSerpBookmarks !== false) {
+          fetchBookmarksOnce().then(list => {
           try {
             const kw = new Set(tokens);
             const addKw = (s)=>{ const v=String(s||'').toLowerCase(); if(v && !TLD_STOP.has(v)) { kw.add(v); const t=ruToLat(v); if(t && t!==v && !TLD_STOP.has(t)) kw.add(t); if (v.includes('.')) { const sld=v.replace(/^www\\./,'').split('.')[0]; if(sld && !TLD_STOP.has(sld)) { kw.add(sld); const ts=ruToLat(sld); if(ts && ts!==sld && !TLD_STOP.has(ts)) kw.add(ts);} } } };
@@ -623,9 +607,8 @@ function toHost(input){ return toHref(input).host; }
               if (bookmarkHits.length >= 6) break;
             }
 
-            tipCount = matchedKeys.length + bookmarkHits.length;
-            setBadgeCount(tipCount);
-            if (__serpDismissed) return;
+              tipCount = matchedKeys.length + bookmarkHits.length;
+              setBadgeCount(tipCount);
             if (shouldRenderPanel && el) updateChipCount(el, tipCount);
 
             hintsPayload.bookmarks = bookmarkHits;
@@ -679,7 +662,7 @@ function toHost(input){ return toHref(input).host; }
   }
 
   renderTips();
-  function onUrlMaybeChanged(){ if (location.href !== lastUrl) { const el = document.getElementById('ah-serp'); if (el) el.remove(); renderTips(); } }
+  function onUrlMaybeChanged(){ if (location.href !== lastUrl) { const el = document.getElementById('ah-root'); if (el) el.remove(); renderTips(); } }
   const _push = history.pushState; history.pushState = function(){ _push.apply(this, arguments); setTimeout(onUrlMaybeChanged, 0); };
   const _replace = history.replaceState; history.replaceState = function(){ _replace.apply(this, arguments); setTimeout(onUrlMaybeChanged, 0); };
   window.addEventListener('popstate', onUrlMaybeChanged);
@@ -689,7 +672,7 @@ function toHost(input){ return toHref(input).host; }
       chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         if (msg && msg.type === 'ah:show-serp-panel') {
           try {
-            const panel = document.getElementById('ah-serp');
+            const panel = document.getElementById('ah-root');
             if (panel) {
               expandPanel(panel);
               sendResponse && sendResponse({ ok: true, hasTips: true });
