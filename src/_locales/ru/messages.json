@@ -1,12 +1,12 @@
 {
   "extName": {
-    "message": "Access Helper: легальные альтернативы и архив"
+    "message": "Unlock.SBS — Smart Bypass Service"
   },
   "extDesc": {
-    "message": "Показывает официальные альтернативные домены из ваших настроек, полезные подсказки и подборку закладок прямо в выдаче."
+    "message": "Показывает официальные альтернативные домены из ваших настроек, подсказки и похожие закладки прямо в выдаче."
   },
   "optTitle": {
-    "message": "Access Helper — настройки"
+    "message": "Unlock.SBS — настройки (Access Helper)"
   },
   "domainLabel": {
     "message": "Домен"
@@ -91,5 +91,23 @@
   },
   "chipLabel": {
     "message": "Unlock.SBS"
+  },
+  "prefsHeading": {
+    "message": "Расширенные настройки"
+  },
+  "prefSensitivity": {
+    "message": "Чувствительность (мин. длина бренда)"
+  },
+  "prefUnicode": {
+    "message": "Юникод-разбор (если поддерживается)"
+  },
+  "prefShowBookmarks": {
+    "message": "Показывать закладки на странице поиска"
+  },
+  "prefShowBadge": {
+    "message": "Значок с количеством подсказок"
+  },
+  "domainsHeading": {
+    "message": "Управление доменами"
   }
 }

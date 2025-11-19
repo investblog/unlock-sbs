@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <title data-i18n="optTitle">Access Helper — Settings</title>
+  <title data-i18n="optTitle">Unlock.SBS — настройки (Access Helper)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
   :root {
@@ -339,37 +339,37 @@
   <div class="ah-shell">
     <div class="ah-card ah-options-card">
       <header class="ah-page-header">
-        <h1><span data-i18n="optTitle">Access Helper — Settings</span></h1>
-        <p class="ah-page-subtitle" data-i18n="appDesc">Shows official mirrors and your related bookmarks right on search pages.</p>
+        <h1><span data-i18n="optTitle">Unlock.SBS — настройки (Access Helper)</span></h1>
+        <p class="ah-page-subtitle" data-i18n="appDesc">Подсказки, официальные зеркала и похожие закладки прямо на странице выдачи.</p>
       </header>
 
       <section class="ah-section ah-card-soft">
-        <div class="ah-section-title" data-i18n="domainsHeading">Manage domains</div>
+        <div class="ah-section-title" data-i18n="domainsHeading">Управление доменами</div>
         <div class="ah-field-grid">
           <label class="ah-field">
-            <span class="ah-label" data-i18n="domainLabel">Domain</span>
+            <span class="ah-label" data-i18n="domainLabel">Домен</span>
             <input id="domain" class="ah-input" placeholder="example.com" />
           </label>
           <label class="ah-field">
-            <span class="ah-label" data-i18n="altsLabel">Official alternates (comma-separated)</span>
+            <span class="ah-label" data-i18n="altsLabel">Официальные альтернативы (домен или полный URL, через запятую)</span>
             <div class="ah-combo">
               <input id="alts" class="ah-input" placeholder="example.org, example.net" />
-              <button id="add" type="button" class="ah-btn ah-btn-primary"><span data-i18n="addBtn">Add</span></button>
+              <button id="add" type="button" class="ah-btn ah-btn-primary"><span data-i18n="addBtn">Добавить</span></button>
             </div>
           </label>
         </div>
         <div class="ah-actions-row">
-          <button id="exportBtn" type="button" class="ah-btn ah-btn-outline"><span data-i18n="exportBtn">Export JSON</span></button>
-          <button id="importBtn" type="button" class="ah-btn ah-btn-outline"><span data-i18n="importBtn">Import JSON</span></button>
-          <span class="ah-muted small" data-i18n="jsonFormatHelp">JSON format: {"example.com":["example.org","example.net"]}</span>
+          <button id="exportBtn" type="button" class="ah-btn ah-btn-outline"><span data-i18n="exportBtn">Экспорт JSON</span></button>
+          <button id="importBtn" type="button" class="ah-btn ah-btn-outline"><span data-i18n="importBtn">Импорт JSON</span></button>
+          <span class="ah-muted small" data-i18n="jsonFormatHelp">JSON формат: {"example.com":["example.org","https://ya.ru/internet"]}</span>
         </div>
       </section>
 
       <section class="ah-section ah-card-soft" id="prefs">
-        <div class="ah-section-title" data-i18n="prefsHeading">Advanced settings</div>
+        <div class="ah-section-title" data-i18n="prefsHeading">Расширенные настройки</div>
         <div class="ah-prefs-grid">
           <label class="ah-range">
-            <span class="ah-label" data-i18n="prefSensitivity">Sensitivity (min brand length)</span>
+            <span class="ah-label" data-i18n="prefSensitivity">Чувствительность (мин. длина бренда)</span>
             <div class="ah-range-control">
               <input id="prefMinToken" class="ah-slider" type="range" min="2" max="6" value="2" />
               <span id="prefMinTokenVal" class="ah-slider-value">2</span>
@@ -377,21 +377,21 @@
           </label>
           <div class="ah-toggle-group">
             <label class="ah-toggle">
-              <span class="ah-toggle-text" data-i18n="prefUnicode">Unicode tokenization (if available)</span>
+              <span class="ah-toggle-text" data-i18n="prefUnicode">Юникод-разбор (если поддерживается)</span>
               <span class="ah-toggle-control">
                 <input id="prefUnicode" type="checkbox" checked />
                 <span class="ah-toggle-switch" aria-hidden="true"></span>
               </span>
             </label>
             <label class="ah-toggle">
-              <span class="ah-toggle-text" data-i18n="prefShowBookmarks">Show bookmarks on SERP</span>
+              <span class="ah-toggle-text" data-i18n="prefShowBookmarks">Показывать закладки на странице поиска</span>
               <span class="ah-toggle-control">
                 <input id="prefShowBookmarks" type="checkbox" checked />
                 <span class="ah-toggle-switch" aria-hidden="true"></span>
               </span>
             </label>
             <label class="ah-toggle">
-              <span class="ah-toggle-text" data-i18n="prefShowBadge">Badge with bookmarks count</span>
+              <span class="ah-toggle-text" data-i18n="prefShowBadge">Значок с количеством подсказок</span>
               <span class="ah-toggle-control">
                 <input id="prefShowBadge" type="checkbox" checked />
                 <span class="ah-toggle-switch" aria-hidden="true"></span>
@@ -399,19 +399,19 @@
             </label>
           </div>
           <div class="panel-mode">
-            <div class="ah-label" data-i18n="panelModeLabel">SERP panel mode</div>
+            <div class="ah-label" data-i18n="panelModeLabel">Режим панели на SERP</div>
             <div class="ah-radio-group">
               <label class="ah-radio-pill">
                 <input type="radio" name="panelMode" value="icon" />
-                <span data-i18n="panelModeIcon">Badge only (hide panel)</span>
+                <span data-i18n="panelModeIcon">Только значок (панель скрыта)</span>
               </label>
               <label class="ah-radio-pill">
                 <input type="radio" name="panelMode" value="chip" checked />
-                <span data-i18n="panelModeChip">Badge + compact chip</span>
+                <span data-i18n="panelModeChip">Значок + компактный чип</span>
               </label>
               <label class="ah-radio-pill">
                 <input type="radio" name="panelMode" value="auto" />
-                <span data-i18n="panelModeAuto">Badge + expanded panel</span>
+                <span data-i18n="panelModeAuto">Значок + сразу раскрытая панель</span>
               </label>
             </div>
           </div>
@@ -420,12 +420,12 @@
 
       <section class="ah-section ah-card-soft list-section">
         <label class="ah-field">
-          <span class="ah-label" data-i18n="searchLabel">Filter domains</span>
+          <span class="ah-label" data-i18n="searchLabel">Поиск по доменам</span>
           <input id="search" class="ah-input" placeholder="..." data-i18n-placeholder="searchPlaceholder" />
         </label>
         <div class="ah-list" id="list"></div>
         <div class="bookmark-section is-hidden" id="bmSection">
-          <div class="ah-muted" data-i18n="bookmarksHeading">Related bookmarks</div>
+          <div class="ah-muted" data-i18n="bookmarksHeading">Похожие закладки</div>
           <div id="bmResults" class="ah-pill-row bookmark-pills"></div>
         </div>
       </section>

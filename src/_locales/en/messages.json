@@ -1,12 +1,12 @@
 {
   "extName": {
-    "message": "Access Helper: Legal Alternates & Archive"
+    "message": "Unlock.SBS — Smart Bypass Service"
   },
   "extDesc": {
-    "message": "Shows official alternate domains you add plus search-page tips and bookmark integrations right where you need them."
+    "message": "Shows official alternates you add plus on-page tips and bookmark helpers right where you need them."
   },
   "optTitle": {
-    "message": "Access Helper — Settings"
+    "message": "Unlock.SBS — Settings (Access Helper)"
   },
   "domainLabel": {
     "message": "Domain"
@@ -106,5 +106,8 @@
   },
   "chipLabel": {
     "message": "Unlock.SBS"
+  },
+  "domainsHeading": {
+    "message": "Manage domains"
   }
 }
