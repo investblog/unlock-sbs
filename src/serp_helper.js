@@ -18,6 +18,14 @@ function toHost(input){ return toHref(input).host; }
 
   function _(id, fallback=''){ try { return chrome.i18n.getMessage(id) || fallback; } catch(e){ return fallback; } }
 
+  function hasRuntime(){
+    try {
+      return typeof chrome !== 'undefined' && !!(chrome.runtime && chrome.runtime.id);
+    } catch (e) {
+      return false;
+    }
+  }
+
   // --- host & query helpers ---
   function isSerpHost(){
     const h = location.host;
@@ -58,7 +66,7 @@ function toHost(input){ return toHref(input).host; }
   function getPrefsAndAlternates(callback){
     const fallback = { alternates: {}, prefs: DEFAULT_PREFS };
     try {
-      if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.sync) throw new Error('no storage');
+      if (!hasRuntime() || !chrome.storage || !chrome.storage.sync) throw new Error('no storage');
       chrome.storage.sync.get(STORAGE_DEFAULTS, (data) => {
         try {
           const payload = data && typeof data === 'object' ? data : fallback;
@@ -137,11 +145,13 @@ function toHost(input){ return toHref(input).host; }
   function expandPanel(el){ setPanelExpanded(el, true); }
   function updateChipCount(el, count){ if (!el) return; const target = el.querySelector('#ah-chip-count'); if (target) target.textContent = String(Math.max(0, parseInt(count,10)||0)); }
   function setBadgeCount(count){
-    try {
-      if (!__prefs || __prefs.showBadge !== false) {
-        chrome.runtime.sendMessage({ type: 'ah:set-badge', count: Math.max(0, parseInt(count, 10) || 0) });
-      }
-    } catch(e){}
+      try {
+        if (!__prefs || __prefs.showBadge !== false) {
+          if (hasRuntime()) {
+            chrome.runtime.sendMessage({ type: 'ah:set-badge', count: Math.max(0, parseInt(count, 10) || 0) });
+          }
+        }
+      } catch(e){}
   }
 
   function tokenizeQuery(q){
@@ -215,7 +225,7 @@ function toHost(input){ return toHref(input).host; }
     const cx = el.querySelector('#ah-close-x'); if (cx) cx.addEventListener('click', collapse);
     const closeBtn = el.querySelector('#ah-close'); if (closeBtn) closeBtn.addEventListener('click', collapse);
     const sb = el.querySelector('#ah-settings');
-    if (sb) sb.addEventListener('click', ()=>{ try{ chrome.runtime.sendMessage({type:'ah:open-settings'}); }catch(e){} });
+    if (sb) sb.addEventListener('click', ()=>{ try{ if(hasRuntime()) chrome.runtime.sendMessage({type:'ah:open-settings'}); }catch(e){} });
     return el;
   }
   function makePlainLink(href, text) { return `<a href="${href}" target="_blank" rel="noreferrer" style="color:#a8c6ff; text-decoration:underline; cursor:pointer">${text}</a>`; }
@@ -229,6 +239,7 @@ function toHost(input){ return toHref(input).host; }
     return new Promise((resolve)=>{
       if (__bmCache) return resolve(__bmCache);
       try {
+        if (!hasRuntime()) throw new Error('no-runtime');
         chrome.runtime.sendMessage({type:'ah:get-bookmarks'}, (resp)=>{
           const list = (resp && resp.ok && Array.isArray(resp.items)) ? resp.items : [];
           __bmCache = list; resolve(list);
@@ -382,20 +393,24 @@ function toHost(input){ return toHref(input).host; }
   const _replace = history.replaceState; history.replaceState = function(){ _replace.apply(this, arguments); setTimeout(onUrlMaybeChanged, 0); };
   window.addEventListener('popstate', onUrlMaybeChanged);
   setInterval(onUrlMaybeChanged, 800);
-  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    if (msg && msg.type === 'ah:show-serp-panel') {
-      try {
-        const panel = document.getElementById('ah-serp');
-        if (panel) {
-          expandPanel(panel);
-          sendResponse && sendResponse({ ok: true, hasTips: true });
-        } else {
-          showNoTipsToast();
-          sendResponse && sendResponse({ ok: true, hasTips: false });
+  try {
+    if (hasRuntime() && chrome.runtime.onMessage) {
+      chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+        if (msg && msg.type === 'ah:show-serp-panel') {
+          try {
+            const panel = document.getElementById('ah-serp');
+            if (panel) {
+              expandPanel(panel);
+              sendResponse && sendResponse({ ok: true, hasTips: true });
+            } else {
+              showNoTipsToast();
+              sendResponse && sendResponse({ ok: true, hasTips: false });
+            }
+          } catch (err) {
+            sendResponse && sendResponse({ ok: false });
+          }
         }
-      } catch (err) {
-        sendResponse && sendResponse({ ok: false });
-      }
+      });
     }
-  });
+  } catch (e) {}
 })();
