@@ -76,6 +76,19 @@ function getStoredPanelHash(){
     } catch (e) { resolve(''); }
   });
 }
+async function openSuggestionsPopup(url){
+  try {
+    await chrome.windows.create({
+      url,
+      type: 'popup',
+      width: 420,
+      height: 600,
+      focused: true
+    });
+  } catch (popupError) {
+    await chrome.tabs.create({ url });
+  }
+}
 async function openSuggestionsForTab(tabId){
   const hash = await getStoredPanelHash();
   const suffix = hash && hash.startsWith('#') ? hash : (hash ? `#${hash}` : '');
@@ -85,7 +98,7 @@ async function openSuggestionsForTab(tabId){
     await openInSidePanel(tabId, target);
     if (hash) await chrome.storage.local.set({ __ah_sidepanel_params: hash });
   } catch (e) {
-    await chrome.tabs.create({ url: target });
+    await openSuggestionsPopup(target);
   }
 }
 chrome.action.onClicked.addListener(async (tab) => {
