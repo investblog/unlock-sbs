@@ -399,8 +399,16 @@
           <label class="ah-range">
             <span class="ah-label" data-i18n="prefSensitivity">Чувствительность (мин. длина бренда)</span>
             <div class="ah-range-control">
-              <input id="prefMinToken" class="ah-slider" type="range" min="2" max="6" value="2" />
-              <span id="prefMinTokenVal" class="ah-slider-value">2</span>
+              <input
+                id="ah-minBrand"
+                class="ah-slider"
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                value="2"
+              />
+              <span id="ah-minBrand-value" class="ah-slider-value">2</span>
             </div>
           </label>
           <div class="ah-toggle-group">

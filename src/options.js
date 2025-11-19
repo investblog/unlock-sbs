@@ -199,7 +199,7 @@ $('#importBtn').addEventListener('click', async () => {
 
 
 // --- Preferences ---
-const PREF_DEFAULTS = { minToken: 2, showSerpBookmarks: true, showBadge: true, useUnicodeTokenize: true, panelMode: 'chip' };
+const PREF_DEFAULTS = { minBrandLength: 2, showSerpBookmarks: true, showBadge: true, useUnicodeTokenize: true, panelMode: 'chip' };
 
 function loadPrefs(){
   return new Promise(resolve => {
@@ -212,16 +212,17 @@ async function initPrefsUI(){
   const box = document.querySelector('#prefs'); if (!box) return;
   const panelRadios = Array.from(document.querySelectorAll('input[name="panelMode"]'));
   const els = {
-    min: document.querySelector('#prefMinToken'),
-    minVal: document.querySelector('#prefMinTokenVal'),
+    min: document.querySelector('#ah-minBrand'),
+    minVal: document.querySelector('#ah-minBrand-value'),
     unicode: document.querySelector('#prefUnicode'),
     showBm: document.querySelector('#prefShowBookmarks'),
     badge: document.querySelector('#prefShowBadge'),
     panelRadios,
   };
   const prefs = await loadPrefs();
-  els.min.value = String(prefs.minToken ?? 2);
-  els.minVal.textContent = String(prefs.minToken ?? 2);
+  const minBrand = Math.max(1, Math.min(10, prefs.minBrandLength ?? prefs.minToken ?? 2));
+  els.min.value = String(minBrand);
+  els.minVal.textContent = String(minBrand);
   els.unicode.checked = !!prefs.useUnicodeTokenize;
   els.showBm.checked = !!prefs.showSerpBookmarks;
   els.badge.checked = !!prefs.showBadge;
@@ -237,14 +238,28 @@ async function initPrefsUI(){
     const selected = panelRadios.find(r => r.checked);
     const prefMode = selected ? selected.value : 'chip';
     return {
-      minToken: parseInt(els.min.value,10) || 2,
+      minBrandLength: (() => {
+        const n = parseInt(els.min.value,10);
+        if (!Number.isFinite(n)) return 2;
+        if (n > 10) return 10;
+        if (n < 1) return 1;
+        return n;
+      })(),
       useUnicodeTokenize: !!els.unicode.checked,
       showSerpBookmarks: !!els.showBm.checked,
       showBadge: !!els.badge.checked,
       panelMode: ['icon','chip','auto'].includes(prefMode) ? prefMode : 'chip',
     };
   }
-  els.min.addEventListener('input', () => { els.minVal.textContent = els.min.value; debouncedSave(snapshot()); });
+  els.min.addEventListener('input', () => {
+    let val = parseInt(els.min.value, 10);
+    if (!Number.isFinite(val)) val = 1;
+    if (val > 10) val = 10;
+    if (val < 1) val = 1;
+    els.min.value = String(val);
+    els.minVal.textContent = String(val);
+    debouncedSave(snapshot());
+  });
   [els.unicode, els.showBm, els.badge].forEach(ch => ch.addEventListener('change', () => debouncedSave(snapshot())));
   panelRadios.forEach(r => r.addEventListener('change', () => debouncedSave(snapshot())));
 }

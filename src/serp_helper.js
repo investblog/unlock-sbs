@@ -55,7 +55,7 @@ function toHost(input){ return toHref(input).host; }
   }
 
   // --- prefs & helpers ---
-  const DEFAULT_PREFS = { minToken: 2, showSerpBookmarks: true, showBadge: true, useUnicodeTokenize: true, panelMode: 'chip' };
+  const DEFAULT_PREFS = { minBrandLength: 2, showSerpBookmarks: true, showBadge: true, useUnicodeTokenize: true, panelMode: 'chip' };
   const TLD_STOP = new Set(['www','com','ru','net','org','info','io','co','app','dev','site','online','top','xyz']);
   const RU_TO_LAT = { 'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'c','ч':'ch','ш':'sh','щ':'shch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya' };
   function ruToLat(s){ return String(s||'').toLowerCase().replace(/[\u0400-\u04FF]/g, ch => RU_TO_LAT[ch] ?? ch); }
@@ -406,7 +406,7 @@ function toHost(input){ return toHref(input).host; }
     if (!splitter) splitter = /[^a-z0-9\u0400-\u04FF-]+/i;
     const raw = str.split(splitter).map(t => t.trim()).filter(Boolean);
     const out = new Set();
-    const minTok = Math.max(1, parseInt((__prefs && __prefs.minToken) || 2, 10));
+    const minTok = Math.max(1, Math.min(10, parseInt((__prefs && (__prefs.minBrandLength ?? __prefs.minToken)) || 2, 10)));
     for (const t of raw) {
       if (t.length >= minTok && !TLD_STOP.has(t)) out.add(t);
       const tl = ruToLat(t);
