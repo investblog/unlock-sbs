@@ -67,6 +67,15 @@
     text-transform: uppercase;
     color: var(--ah-muted);
   }
+  .popup-hints-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--ah-muted);
+  }
   .ah-btn {
     display: inline-flex;
     align-items: center;
@@ -154,6 +163,27 @@
   .popup-links { display: flex; flex-direction: column; gap: 6px; }
   a { color: var(--ah-accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
+  .popup-hints { display: flex; flex-direction: column; gap: 10px; }
+  .popup-hints-group { display: flex; flex-direction: column; gap: 8px; }
+  .popup-hints-empty { color: var(--ah-muted); }
+  .ah-pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ah-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--ah-radius-pill);
+    border: 1px solid var(--ah-border-subtle);
+    background: rgba(255,255,255,.02);
+    color: var(--ah-text);
+    text-decoration: none;
+    font-size: 13px;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  .ah-pill:hover { border-color: rgba(94,139,255,.8); color: #dbe4ff; }
+  .ah-pill-label { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-flex; align-items: center; }
+  .ah-pill-arrow { color: var(--ah-muted); }
+  .ah-tip { color: var(--ah-text); }
   </style>
 </head>
 <body>
@@ -189,6 +219,10 @@
         </span>
       </label>
     </section>
+    <section class="popup-section" id="popup-hints-section">
+      <div class="popup-section-title">Подсказки по поиску</div>
+      <div class="popup-hints" id="popup-hints"></div>
+    </section>
     <section class="popup-section">
       <div class="popup-section-title">Нужно больше?</div>
       <div class="popup-links">
@@ -197,18 +231,151 @@
       </div>
     </section>
   </div>
+  <script src="ui_helpers.js"></script>
   <script>
     (function(){
       const openBtn = document.querySelector('[data-action="open-settings"]');
-      if (!openBtn) return;
-      openBtn.addEventListener('click', () => {
+      if (openBtn) {
+        openBtn.addEventListener('click', () => {
+          try {
+            if (chrome?.runtime?.openOptionsPage) {
+              chrome.runtime.openOptionsPage();
+              return;
+            }
+          } catch (e) {}
+          window.open('options.html', '_blank');
+        });
+      }
+
+      const hintsBox = document.getElementById('popup-hints');
+      const hintsSection = document.getElementById('popup-hints-section');
+
+      const createPill = (href, text) => {
+        const pill = document.createElement('a');
+        pill.className = 'ah-pill';
+        pill.href = href;
+        pill.target = '_blank';
+        pill.rel = 'noreferrer';
+        const label = document.createElement('span');
+        label.className = 'ah-pill-label';
+        label.textContent = text;
+        const arrow = document.createElement('span');
+        arrow.className = 'ah-pill-arrow';
+        arrow.textContent = '⭢';
+        pill.append(label, arrow);
+        return pill;
+      };
+
+      const renderEmpty = () => {
+        hintsBox.innerHTML = '';
+        const empty = document.createElement('div');
+        empty.className = 'popup-hints-empty';
+        empty.textContent = 'Для этой страницы подсказок нет. Откройте результаты поиска Google, Яндекс или Bing, чтобы увидеть подсказки.';
+        hintsBox.appendChild(empty);
+      };
+
+      const renderHints = (data) => {
+        if (!hintsBox || !hintsSection) return;
+        if (!data || !data.hints) { renderEmpty(); return; }
+
+        const { url, hints } = data;
+        const alternates = Array.isArray(hints.alternates) ? hints.alternates : [];
+        const bookmarks = Array.isArray(hints.bookmarks) ? hints.bookmarks : [];
+        const tips = Array.isArray(hints.tips) ? hints.tips : [];
+
+        hintsBox.innerHTML = '';
+        const groups = [];
+
+        if (alternates.length) {
+          const g = document.createElement('div');
+          g.className = 'popup-hints-group';
+          const title = document.createElement('div');
+          title.className = 'popup-hints-title';
+          title.prepend(ahCreateIcon ? ahCreateIcon('unlocked', 'sm', 'ok') : document.createTextNode(''));
+          title.appendChild(document.createTextNode('Официальные альтернативы'));
+          g.appendChild(title);
+          alternates.forEach((alt) => {
+            const note = document.createElement('div');
+            note.className = 'ah-muted';
+            note.textContent = alt.domain;
+            const row = document.createElement('div');
+            row.className = 'ah-pill-row';
+            (alt.alternates || []).forEach((a) => {
+              const link = createPill(a, a.replace(/^https?:\/\//i, ''));
+              link.title = a;
+              row.appendChild(link);
+            });
+            g.append(note, row);
+          });
+          groups.push(g);
+        }
+
+        if (bookmarks.length) {
+          const g = document.createElement('div');
+          g.className = 'popup-hints-group';
+          const title = document.createElement('div');
+          title.className = 'popup-hints-title';
+          title.prepend(ahCreateIcon ? ahCreateIcon('brand', 'sm', 'main') : document.createTextNode(''));
+          title.appendChild(document.createTextNode('Похожие закладки'));
+          g.appendChild(title);
+          const row = document.createElement('div');
+          row.className = 'ah-pill-row';
+          bookmarks.forEach((b) => {
+            const link = createPill(b.url, b.title || b.url);
+            row.appendChild(link);
+          });
+          g.appendChild(row);
+          groups.push(g);
+        }
+
+        if (tips.length) {
+          const g = document.createElement('div');
+          g.className = 'popup-hints-group';
+          const title = document.createElement('div');
+          title.className = 'popup-hints-title';
+          title.prepend(ahCreateIcon ? ahCreateIcon('brand', 'sm', 'muted') : document.createTextNode(''));
+          title.appendChild(document.createTextNode('Подсказки по запросу'));
+          g.appendChild(title);
+          tips.forEach((t) => {
+            const tipEl = document.createElement('div');
+            tipEl.className = 'ah-tip';
+            tipEl.innerHTML = t;
+            g.appendChild(tipEl);
+          });
+          groups.push(g);
+        }
+
+        if (url) {
+          const g = document.createElement('div');
+          g.className = 'popup-hints-group';
+          const btn = document.createElement('a');
+          btn.className = 'ah-btn ah-btn-outline';
+          btn.href = `https://web.archive.org/web/*/${encodeURIComponent(url)}`;
+          btn.target = '_blank';
+          btn.rel = 'noreferrer';
+          btn.textContent = 'Открыть в Wayback Machine';
+          btn.prepend(ahCreateIcon ? ahCreateIcon('unlocked', 'sm', 'ok') : document.createTextNode(''));
+          g.appendChild(btn);
+          groups.push(g);
+        }
+
+        if (!groups.length) { renderEmpty(); return; }
+
+        groups.forEach((g) => hintsBox.appendChild(g));
+      };
+
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs && tabs[0];
+        if (!tab) { renderEmpty(); return; }
         try {
-          if (chrome?.runtime?.openOptionsPage) {
-            chrome.runtime.openOptionsPage();
-            return;
-          }
-        } catch (e) {}
-        window.open('options.html', '_blank');
+          chrome.runtime.sendMessage({ type: 'ah:get-tab-hints', tabId: tab.id }, (resp) => {
+            if (chrome.runtime.lastError) { renderEmpty(); return; }
+            if (resp && resp.ok) renderHints(resp.data);
+            else renderEmpty();
+          });
+        } catch (e) {
+          renderEmpty();
+        }
       });
     })();
   </script>

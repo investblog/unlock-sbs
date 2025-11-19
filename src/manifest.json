@@ -17,6 +17,14 @@
   "background": {
     "service_worker": "background.js"
   },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/*.svg"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "options_page": "options.html",
   "action": {
     "default_title": "__MSG_appName__",
@@ -41,6 +49,7 @@
         "*://*/*"
       ],
       "js": [
+        "ui_helpers.js",
         "serp_helper.js"
       ],
       "run_at": "document_end"

@@ -1,3 +1,5 @@
+const ahTabHints = new Map();
+
 async function openOptionsInSidePanel(tabId){
   try {
     if (!chrome.sidePanel || !chrome.sidePanel.open) throw new Error('no-sidepanel');
@@ -63,6 +65,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
+chrome.runtime.onMessage.addListener((msg, sender) => {
+  if (msg && msg.type === 'ah:serp-hints') {
+    const tabId = sender?.tab?.id ?? msg.tabId;
+    if (tabId != null) {
+      ahTabHints.set(tabId, { url: msg.url, hints: msg.hints });
+    }
+  }
+});
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg && msg.type === 'ah:get-bookmarks') {
     try {
@@ -90,4 +101,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     sendResponse && sendResponse({ ok: true });
     return; // no async
   }
+});
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg && msg.type === 'ah:get-tab-hints') {
+    const data = ahTabHints.get(msg.tabId) || null;
+    sendResponse({ ok: true, data });
+    return true;
+  }
+});
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+  ahTabHints.delete(tabId);
 });
