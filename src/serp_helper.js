@@ -81,6 +81,7 @@ function toHost(input){ return toHref(input).host; }
     }
   }
   const BRAND_ICON = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3"/><path d="M12 8.5a2.8 2.8 0 0 1 2.8 2.8c0 1.02-.5 1.92-1.28 2.43l.38 3.27h-3.8l.38-3.27A2.8 2.8 0 0 1 9.2 11.3 2.8 2.8 0 0 1 12 8.5Z" fill="currentColor"/></svg>`;
+  const BRAND_ICON_MAIN = `<span class="ah-icon ah-icon--main" aria-hidden="true">${BRAND_ICON}</span>`;
   const ICON_LINKS = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 15h-1.5a3.5 3.5 0 0 1 0-7H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M15 9h1.5a3.5 3.5 0 0 1 0 7H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
   const ICON_BOOKMARK = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5h6a2 2 0 0 1 2 2v12l-5-2.5L7 19V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 5v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
   function createSectionHeader(iconSvg, labelText) {
@@ -123,8 +124,8 @@ function toHost(input){ return toHref(input).host; }
       }
       #ah-serp {
         position: fixed;
-        top: 16px;
-        right: 16px;
+        top: 64px;
+        right: 86px;
         z-index: 999999;
         font-family: var(--ah-font);
         font-size: var(--ah-font-size);
@@ -182,6 +183,14 @@ function toHost(input){ return toHref(input).host; }
         color: var(--ah-accent);
       }
       #ah-serp .ah-icon-wrap svg { width: 100%; height: 100%; display: block; }
+      #ah-serp .ah-icon {
+        display: inline-flex;
+        width: 18px;
+        height: 18px;
+        color: var(--ah-accent);
+      }
+      #ah-serp .ah-icon--main { width: 20px; height: 20px; }
+      #ah-serp .ah-icon svg { width: 100%; height: 100%; display: block; }
       #ah-serp .ah-chip {
         display: inline-flex;
         align-items: center;
@@ -222,20 +231,20 @@ function toHost(input){ return toHref(input).host; }
       }
       #ah-serp .ah-serp-card {
         margin-top: 8px;
-        background: var(--ah-card-soft);
+        background: var(--ah-card);
         border-radius: var(--ah-radius);
         border: 1px solid var(--ah-border-subtle);
         box-shadow: var(--ah-shadow-soft);
-        padding: 10px 12px;
-        max-width: min(360px, calc(100vw - 32px));
-        width: 100%;
+        padding: 14px 18px;
+        max-width: 90vw;
+        width: 360px;
       }
       #ah-serp .ah-panel-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
       }
       #ah-serp .ah-panel-close {
         width: 28px;
@@ -249,7 +258,7 @@ function toHost(input){ return toHref(input).host; }
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: .04em;
-        color: var(--ah-muted);
+        color: var(--ah-text);
       }
       #ah-serp .ah-section {
         display: none;
@@ -262,13 +271,13 @@ function toHost(input){ return toHref(input).host; }
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: .04em;
         color: var(--ah-muted);
       }
-      #ah-serp .ah-pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+      #ah-serp .ah-pill-row { display: flex; flex-wrap: wrap; gap: 10px; }
       #ah-serp .ah-pill {
         display: inline-flex;
         align-items: center;
@@ -299,7 +308,8 @@ function toHost(input){ return toHref(input).host; }
         height: 16px;
         object-fit: cover;
       }
-      #ah-serp .ah-panel-body { font-size: var(--ah-font-size); color: var(--ah-muted); }
+      #ah-serp .ah-section-note { margin: 0 0 6px; color: var(--ah-muted); }
+      #ah-serp .ah-panel-body { font-size: var(--ah-font-size); color: var(--ah-text); }
       #ah-serp .ah-tip { margin: 4px 0; }
       #ah-serp .ah-inline-link { color: var(--ah-accent); text-decoration: none; }
       #ah-serp .ah-inline-link:hover { text-decoration: underline; }
@@ -308,8 +318,10 @@ function toHost(input){ return toHref(input).host; }
         padding-top: 10px;
         border-top: 1px solid var(--ah-border-subtle);
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 8px;
+        justify-content: space-between;
+        align-items: center;
       }
       #ah-serp.ah-serp-expanded .ah-chip { display: none; }
       #ah-serp:not(.ah-serp-expanded) .ah-serp-card { display: none; }
@@ -429,7 +441,7 @@ function toHost(input){ return toHref(input).host; }
           </button>
           <div class="ah-serp-card">
             <div class="ah-panel-header">
-              <div class="ah-panel-title"><span class="ah-icon-wrap" aria-hidden="true">${BRAND_ICON}</span><span>${_('serpPanelTitle','Search tips')}</span></div>
+              <div class="ah-panel-title">${BRAND_ICON_MAIN}<span>${_('serpPanelTitle','Search tips')}</span></div>
               <button id="ah-close-x" class="ah-btn ah-btn-ghost ah-panel-close" type="button" aria-label="${_('serpHide','Hide')}">×</button>
             </div>
           <div id="ah-mirrors" class="ah-section"></div>
