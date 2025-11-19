@@ -516,14 +516,15 @@ function toHost(input){ return toHref(input).host; }
       const domainTokens = findDomainsInQuery(q).map(s => s.toLowerCase());
       for (const d of domainTokens){ if (map[d] && !matchedKeys.includes(d)) matchedKeys.push(d); }
 
-      const hintsPayload = {
-        brands: matchedKeys.slice(),
-        alternates: [],
-        bookmarks: [],
-        tips: [],
-        timestamp: Date.now(),
-        query: q
-      };
+        const hintsPayload = {
+          brands: matchedKeys.slice(),
+          alternates: [],
+          bookmarks: [],
+          tips: [],
+          count: 0,
+          timestamp: Date.now(),
+          query: q
+        };
 
       const existing = document.getElementById('ah-root');
       if (!matchedKeys.length) { setBadgeCount(0); sendSerpHints(hintsPayload); if (existing) existing.remove(); return; }
@@ -544,9 +545,10 @@ function toHost(input){ return toHref(input).host; }
         existing.remove();
       }
 
-      let tipCount = matchedKeys.length;
-      setBadgeCount(tipCount);
-      if (shouldRenderPanel && el) updateChipCount(el, tipCount);
+        let tipCount = matchedKeys.length;
+        hintsPayload.count = tipCount;
+        setBadgeCount(tipCount);
+        if (shouldRenderPanel && el) updateChipCount(el, tipCount);
 
       hintsPayload.alternates = matchedKeys.map((key) => {
         const alts = (map[key] || map[key.replace(/^www\./,'')]) || [];
@@ -608,6 +610,7 @@ function toHost(input){ return toHref(input).host; }
             }
 
               tipCount = matchedKeys.length + bookmarkHits.length;
+              hintsPayload.count = tipCount;
               setBadgeCount(tipCount);
             if (shouldRenderPanel && el) updateChipCount(el, tipCount);
 
@@ -650,16 +653,17 @@ function toHost(input){ return toHref(input).host; }
           tips.push(`${_('serpTipRestrict','Try restricting the search to domain:')} <span>${makePlainLink(`https://www.google.com/search?q=${encodeURIComponent(newQ)}`, `site:${d}`)}</span>.`);
         }
       }
-      tips.push(`${_('serpTipArchive','See archived copies:')} ${makePlainLink('https://web.archive.org/', 'Wayback Machine')}.`);
-      hintsPayload.tips = tips;
+        tips.push(`${_('serpTipArchive','See archived copies:')} ${makePlainLink('https://web.archive.org/', 'Wayback Machine')}.`);
+        hintsPayload.tips = tips;
 
-      if (shouldRenderPanel && body) {
-        body.innerHTML = tips.map(t => `<div class="ah-tip">${t}</div>`).join('');
-      }
+        if (shouldRenderPanel && body) {
+          body.innerHTML = tips.map(t => `<div class="ah-tip">${t}</div>`).join('');
+        }
 
-      sendSerpHints(hintsPayload);
-    });
-  }
+        // Always share SERP hints with background regardless of panel mode.
+        sendSerpHints(hintsPayload);
+      });
+    }
 
   renderTips();
   function onUrlMaybeChanged(){ if (location.href !== lastUrl) { const el = document.getElementById('ah-root'); if (el) el.remove(); renderTips(); } }
