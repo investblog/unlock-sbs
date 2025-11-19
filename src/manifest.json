@@ -35,9 +35,6 @@
     "128": "icons/unlock_128.png",
     "256": "icons/unlock_256.png"
   },
-  "side_panel": {
-    "default_path": "suggest.html"
-  },
   "content_scripts": [
     {
       "matches": [
