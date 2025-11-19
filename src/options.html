@@ -16,11 +16,24 @@
     --ah-muted: #9BA3B4;
     --ah-accent: #5E8BFF;
     --ah-accent-soft: rgba(94,139,255,.16);
+    --ah-color-icon-main: var(--ah-accent);
+    --ah-color-icon-soft: #9CA3FF;
+    --ah-color-icon-ok: #25D0A4;
+    --ah-color-icon-warn: #FACC15;
     --ah-radius: 12px;
     --ah-radius-pill: 999px;
     --ah-shadow-soft: 0 18px 45px rgba(0,0,0,.55);
     --ah-font: system-ui, -apple-system, "Segoe UI", sans-serif;
     --ah-font-size: 13px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ah-color-icon-main: #A5B8FF;
+      --ah-color-icon-soft: #7C82FF;
+      --ah-color-icon-ok: #34D399;
+      --ah-color-icon-warn: #FBBF24;
+    }
   }
   * { box-sizing: border-box; }
   body {
@@ -160,6 +173,7 @@
     width: 16px;
     height: 16px;
     vertical-align: middle;
+    flex: 0 0 auto;
   }
   .ah-icon img,
   .ah-icon svg {
@@ -167,12 +181,14 @@
     height: 100%;
     display: block;
     fill: currentColor;
+    stroke: currentColor;
   }
   .ah-icon--sm { width: 14px; height: 14px; }
   .ah-icon--lg { width: 20px; height: 20px; }
-  .ah-icon--main  { color: var(--ah-accent); }
-  .ah-icon--ok    { color: #25D0A4; }
-  .ah-icon--warn  { color: #FF6B6B; }
+  .ah-icon--main  { color: var(--ah-color-icon-main); }
+  .ah-icon--soft  { color: var(--ah-color-icon-soft); }
+  .ah-icon--ok    { color: var(--ah-color-icon-ok); }
+  .ah-icon--warn  { color: var(--ah-color-icon-warn); }
   .ah-icon--muted { color: var(--ah-muted); }
   .ah-actions-row {
     display: flex;
@@ -343,6 +359,15 @@
     border-radius: inherit;
   }
   .ah-panel-note { color: var(--ah-muted); font-size: 13px; margin-top: 8px; }
+  .ah-settings-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ah-settings-card-header .ah-icon {
+    color: var(--ah-color-icon-main);
+    margin-right: 0;
+  }
   @media (max-width: 960px) {
     .ah-card { padding: 24px 22px; }
   }
@@ -366,8 +391,8 @@
       </header>
 
       <section class="ah-section ah-card-soft">
-        <div class="ah-section-title">
-          <span class="ah-icon ah-icon--muted" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
+        <div class="ah-section-title ah-settings-card-header">
+          <span class="ah-icon ah-icon--main" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
           <span data-i18n="domainsHeading">Управление доменами</span>
         </div>
         <div class="ah-field-grid">
@@ -391,8 +416,8 @@
       </section>
 
       <section class="ah-section ah-card-soft" id="prefs">
-        <div class="ah-section-title">
-          <span class="ah-icon ah-icon--muted" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
+        <div class="ah-section-title ah-settings-card-header">
+          <span class="ah-icon ah-icon--main" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
           <span data-i18n="prefsHeading">Расширенные настройки</span>
         </div>
         <div class="ah-prefs-grid">
@@ -455,8 +480,8 @@
 
       <section class="ah-section ah-card-soft list-section">
         <label class="ah-field">
-          <span class="ah-label">
-            <span class="ah-icon ah-icon--muted ah-icon--sm" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
+          <span class="ah-label ah-settings-card-header">
+            <span class="ah-icon ah-icon--main ah-icon--sm" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
             <span data-i18n="searchLabel">Поиск по доменам</span>
           </span>
           <input id="search" class="ah-input" placeholder="..." data-i18n-placeholder="searchPlaceholder" />
