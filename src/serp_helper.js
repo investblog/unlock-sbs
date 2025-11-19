@@ -93,7 +93,7 @@ function toHost(input){ return toHref(input).host; }
   };
   function createSectionHeader(iconType, labelText, size = 'sm', tone = 'muted') {
     const div = document.createElement('div');
-    div.className = 'ah-header';
+    div.className = 'ah-header ah-section-title';
     div.append(createIcon(iconType, size, tone), document.createElement('span'));
     div.lastElementChild.textContent = labelText;
     return div;
@@ -122,11 +122,23 @@ function toHost(input){ return toHref(input).host; }
         --ah-muted: #9BA3B4;
         --ah-accent: #5E8BFF;
         --ah-accent-soft: rgba(94,139,255,.16);
+        --ah-color-icon-main: var(--ah-accent);
+        --ah-color-icon-soft: #9CA3FF;
+        --ah-color-icon-ok: #25D0A4;
+        --ah-color-icon-warn: #FACC15;
         --ah-radius: 12px;
         --ah-radius-pill: 999px;
         --ah-shadow-soft: 0 18px 45px rgba(0,0,0,.55);
         --ah-font: system-ui, -apple-system, "Segoe UI", sans-serif;
         --ah-font-size: 13px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --ah-color-icon-main: #A5B8FF;
+          --ah-color-icon-soft: #7C82FF;
+          --ah-color-icon-ok: #34D399;
+          --ah-color-icon-warn: #FBBF24;
+        }
       }
       #ah-root {
         position: fixed;
@@ -187,6 +199,7 @@ function toHost(input){ return toHref(input).host; }
         width: 16px;
         height: 16px;
         vertical-align: middle;
+        flex: 0 0 auto;
       }
       .ah-icon img,
       .ah-icon svg {
@@ -194,44 +207,57 @@ function toHost(input){ return toHref(input).host; }
         height: 100%;
         display: block;
         fill: currentColor;
+        stroke: currentColor;
       }
       .ah-icon--sm { width: 14px; height: 14px; }
       .ah-icon--lg { width: 20px; height: 20px; }
-      .ah-icon--main  { color: var(--ah-accent); }
-      .ah-icon--ok    { color: #25D0A4; }
-      .ah-icon--warn  { color: #FF6B6B; }
+      .ah-icon--main  { color: var(--ah-color-icon-main); }
+      .ah-icon--soft  { color: var(--ah-color-icon-soft); }
+      .ah-icon--ok    { color: var(--ah-color-icon-ok); }
+      .ah-icon--warn  { color: var(--ah-color-icon-warn); }
       .ah-icon--muted { color: var(--ah-muted); }
-      #ah-root .ah-chip {
+      .ah-serp-root .ah-chip {
+        --ah-chip-bg: rgba(15, 23, 42, 0.96);
+        --ah-chip-border: rgba(148, 163, 184, 0.6);
+        --ah-chip-text: #E5E7EB;
+        --ah-chip-badge-bg: #111827;
+        --ah-chip-badge-tx: #F9FAFB;
+
         display: inline-flex;
         align-items: center;
         gap: 6px;
         padding: 4px 9px;
         border-radius: var(--ah-radius-pill);
-        border: 1px solid rgba(255,255,255,.08);
-        background: rgba(10, 14, 24, .9);
+        border: 1px solid var(--ah-chip-border);
+        background: var(--ah-chip-bg);
         cursor: pointer;
         backdrop-filter: blur(8px);
-        color: var(--ah-text);
+        color: var(--ah-chip-text);
         font-weight: 600;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
       }
-      #ah-root .ah-chip:hover {
+      .ah-serp-root .ah-chip:hover {
         border-color: rgba(94, 139, 255, .6);
         background: rgba(15, 20, 33, .95);
       }
-      #ah-root .ah-chip:focus-visible { outline: 2px solid var(--ah-accent); outline-offset: 2px; }
-      #ah-root .ah-chip-text {
+      .ah-serp-root .ah-chip:focus-visible { outline: 2px solid var(--ah-accent); outline-offset: 2px; }
+      .ah-serp-root .ah-chip-text {
         display: inline-flex;
         align-items: center;
         gap: 6px;
       }
-      #ah-root .ah-chip-count {
+      .ah-serp-root .ah-chip .ah-icon {
+        color: var(--ah-color-icon-main);
+        margin-right: 6px;
+      }
+      .ah-serp-root .ah-chip-count {
         min-width: 20px;
         padding: 2px 6px;
         border-radius: var(--ah-radius-pill);
         font-size: 11px;
         line-height: 1;
-        background: var(--ah-accent-soft);
-        color: #c4d4ff;
+        background: var(--ah-chip-badge-bg);
+        color: var(--ah-chip-badge-tx);
       }
       #ah-root .ah-panel {
         display: none;
@@ -266,6 +292,9 @@ function toHost(input){ return toHref(input).host; }
         letter-spacing: .04em;
         color: var(--ah-text);
       }
+      #ah-root .ah-panel-header .ah-icon {
+        color: var(--ah-color-icon-main);
+      }
       #ah-root .ah-section {
         display: none;
         margin-top: 8px;
@@ -282,6 +311,12 @@ function toHost(input){ return toHref(input).host; }
         text-transform: uppercase;
         letter-spacing: .04em;
         color: var(--ah-muted);
+      }
+      #ah-root .ah-panel-section--alternates .ah-section-title .ah-icon {
+        color: var(--ah-color-icon-ok);
+      }
+      #ah-root .ah-panel-section--empty .ah-section-title .ah-icon {
+        color: var(--ah-color-icon-warn);
       }
       #ah-root .ah-pill-row { display: flex; flex-wrap: wrap; gap: 10px; }
       #ah-root .ah-pill {
@@ -445,7 +480,7 @@ function toHost(input){ return toHref(input).host; }
     const box = document.createElement('div');
     const chipLabel = _('chipLabel', 'Unlock.SBS');
       box.innerHTML = `
-        <div id="ah-root" class="ah-root">
+        <div id="ah-root" class="ah-root ah-serp-root">
           <button id="ah-chip" class="ah-chip" type="button" aria-label="${_('serpPanelTitle','Search tips')}">
             <span class="ah-chip-text">
               <span>${chipLabel}</span>
@@ -543,7 +578,7 @@ function toHost(input){ return toHref(input).host; }
       el = injectPanel();
       setPanelExpanded(el, isOpenMode);
       body = el.querySelector('#ah-body');
-      mirrorsWrap = el.querySelector('#ah-mirrors'); if (mirrorsWrap) { mirrorsWrap.innerHTML=''; mirrorsWrap.classList.remove('active'); }
+      mirrorsWrap = el.querySelector('#ah-mirrors'); if (mirrorsWrap) { mirrorsWrap.innerHTML=''; mirrorsWrap.classList.remove('active','ah-panel-section--alternates'); }
       bmWrap = el.querySelector('#ah-bookmarks'); if (bmWrap) { bmWrap.innerHTML=''; bmWrap.classList.remove('active'); }
 
         let tipCount = matchedKeys.length;
@@ -563,7 +598,7 @@ function toHost(input){ return toHref(input).host; }
           if (Array.isArray(alts) && alts.length) {
             if (!showedMirrors) {
               showedMirrors = true;
-              mirrorsWrap.classList.add('active');
+              mirrorsWrap.classList.add('active', 'ah-panel-section--alternates');
               const headerLabel = (_('serpTipAlternates','Official alternates from your settings:') || '').replace(/:\s*$/, '');
               mirrorsWrap.appendChild(createSectionHeader('unlocked', headerLabel, 'sm', 'ok'));
             }
