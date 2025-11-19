@@ -120,10 +120,10 @@ function renderBookmarks(tokens){
     sec.style.display='';
     hits.forEach(h=>{
       const a=document.createElement('a'); a.className='pill'; a.href=h.url; a.target='_blank'; a.rel='noreferrer';
-      const img=document.createElement('img'); img.src=`${(function(){try{return 'https://icons.duckduckgo.com/ip3/'+(new URL(h.url).hostname)+'.ico'}catch(e){return ''}})()}`; img.width=16; img.height=16; img.style.cssText='border-radius:3px;';
+      const img=document.createElement('img'); img.src=`${(function(){try{return 'https://icons.duckduckgo.com/ip3/'+(new URL(h.url).hostname)+'.ico'}catch(e){return ''}})()}`; img.width=16; img.height=16; img.className='bookmark-favicon';
       const span=document.createElement('span'); const t=h.title && h.title.trim()?h.title.trim(): (new URL(h.url).hostname);
       span.textContent = t.length>28 ? t.slice(0,25)+'…' : t;
-      const arrow=document.createElement('span'); arrow.textContent='⭢'; arrow.style.opacity='.9';
+      const arrow=document.createElement('span'); arrow.textContent='⭢'; arrow.className='arrow';
       a.append(img, span, arrow); box.appendChild(a);
     });
   });

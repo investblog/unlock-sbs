@@ -6,140 +6,386 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
   :root {
-    --bg: #0b1220;
-    --card: #121a2b;
-    --border: #223052;
-    --text: #e7ecf3;
-    --muted: #9aa6bb;
-    --input-bg:#0f1627;
-    --input-border:#2b3a5f;
-    --btn-bg:#1a2440;
-    --btn-border:#2b3a5f;
-    --accent: #4c8dff;
-    --link: #a8c6ff;
+    --ah-bg: #0C1019;
+    --ah-card: #101625;
+    --ah-border-subtle: rgba(255,255,255,.04);
+    --ah-border-strong: #252c3c;
+    --ah-text: #E7E9F0;
+    --ah-muted: #9BA3B4;
+    --ah-accent: #5E8BFF;
+    --ah-radius: 10px;
+    --ah-radius-pill: 999px;
+    --ah-shadow: 0 10px 30px rgba(0,0,0,.35);
+    --ah-font: system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  @media (prefers-color-scheme: light) {
-    :root {
-      --bg: #ffffff;
-      --card: #ffffff;
-      --border: #dfe3ea;
-      --text: #1f2328;
-      --muted: #5e6a7a;
-      --input-bg:#ffffff;
-      --input-border:#cbd5e1;
-      --btn-bg:#f7f9fb;
-      --btn-border:#cbd5e1;
-      --accent:#1b66ff;
-      --link:#1b66ff;
-    }
+  body {
+    margin: 0;
+    background: var(--ah-bg);
+    color: var(--ah-text);
+    font-family: var(--ah-font);
+    font-size: 13px;
+    line-height: 1.5;
   }
-  body { margin:0; background:var(--bg); color:var(--text); font-family: Roboto, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif; }
-  .wrap { max-width: 960px; margin: 24px auto; padding: 0 16px; }
-  h1 { font-size: 22px; margin: 0 0 14px; }
-  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding: 18px; }
-  label { display:block; margin: 6px 0 6px; color:var(--muted); font-size:13px; }
-  input { width: 100%; padding: 10px 12px; border-radius: 10px; border:1px solid var(--input-border); background:var(--input-bg); color:var(--text); }
-  button { padding: 10px 14px; border-radius: 10px; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--text); cursor:pointer; }
-  
-  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px; }
-  .muted { color:var(--muted); font-size:12px; }
-  .list { margin-top: 16px; border-top:1px solid var(--border); }
-  .item { display:grid; grid-template-columns: minmax(180px,240px) 1fr auto; gap:12px; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
-  .domain { font-weight:600; }
-  .alts { color:var(--text); display:flex; flex-wrap:wrap; gap:8px; }
-  .btn { background:var(--btn-bg); border:1px solid var(--btn-border); }
-  a.pill { display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px; border:1px solid var(--btn-border); background: var(--btn-bg); color: var(--link); text-decoration:none; cursor:pointer; transition: transform .08s ease, background .12s ease; }
-  a.pill:hover { transform: translateY(-1px); }
-  .arrow { opacity:.9 }
-  @media (max-width: 640px) {
-    .grid, .item { grid-template-columns: 1fr; }
-    .item > :last-child { justify-self: start; }
+  a { color: var(--ah-accent); }
+  .options-shell {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 16px 48px;
   }
-  
-  .grid2 { display:grid; grid-template-columns: minmax(220px, 280px) 1fr; gap: 14px 16px; align-items: end; }
-  .combo { display:flex; gap:8px; align-items: center; }
-  .combo input { flex: 1 1 auto; }
-  .combo button { white-space: nowrap; }
+  .popup-root {
+    min-width: 320px;
+    max-width: 360px;
+    padding: 12px 14px 10px;
+    background: var(--ah-bg);
+    color: var(--ah-text);
+    font-family: var(--ah-font);
+    font-size: 13px;
+  }
+  .options-root {
+    width: min(760px, 100%);
+    padding: 24px 24px 28px;
+    border-radius: var(--ah-radius);
+    border: 1px solid var(--ah-border-subtle);
+    box-shadow: var(--ah-shadow);
+  }
+  .popup-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .popup-header h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.2;
+  }
+  .popup-subtitle {
+    margin: 0;
+    color: var(--ah-muted);
+    font-size: 13px;
+  }
+  .popup-section {
+    border-radius: var(--ah-radius);
+    background: var(--ah-card);
+    padding: 16px;
+    margin-bottom: 14px;
+    border: 1px solid var(--ah-border-subtle);
+  }
+  .popup-section:last-of-type { margin-bottom: 0; }
+  .section-heading {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--ah-muted);
+    margin-bottom: 10px;
+  }
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px 16px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ah-muted);
+  }
+  .field-label { font-weight: 600; color: var(--ah-text); font-size: 12px; letter-spacing: .02em; text-transform: uppercase; }
+  input, button {
+    font-family: inherit;
+    font-size: 13px;
+  }
+  input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--ah-radius);
+    border: 1px solid var(--ah-border-strong);
+    background: #0c111b;
+    color: var(--ah-text);
+  }
+  input:focus { outline: 2px solid rgba(94,139,255,.4); border-color: var(--ah-accent); }
+  .combo {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .combo input { flex: 1 1 auto; min-width: 0; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: var(--ah-radius-pill);
+    border: 1px solid var(--ah-border-strong);
+    background: rgba(255,255,255,.02);
+    color: var(--ah-text);
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease, transform .12s ease, background .15s ease;
+  }
+  .btn:hover { border-color: var(--ah-accent); color: var(--ah-accent); background: rgba(94,139,255,.08); }
+  .btn:focus-visible { outline: 2px solid rgba(94,139,255,.4); outline-offset: 2px; }
+  .btn-accent {
+    background: var(--ah-accent);
+    border-color: transparent;
+    color: #fff;
+  }
+  .btn-accent:hover { color: #fff; border-color: var(--ah-accent); filter: brightness(1.08); }
+  .actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 12px;
+  }
+  .muted { color: var(--ah-muted); }
+  .muted.small { font-size: 12px; }
+  .list {
+    margin-top: 12px;
+    border-top: 1px solid var(--ah-border-subtle);
+  }
+  .item {
+    display: grid;
+    grid-template-columns: minmax(180px, 220px) minmax(160px, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--ah-border-subtle);
+  }
+  .item:last-child { border-bottom: none; }
+  .domain { font-weight: 600; color: var(--ah-text); }
+  .alts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: var(--ah-radius-pill);
+    border: 1px solid var(--ah-border-subtle);
+    background: rgba(255,255,255,.02);
+    color: var(--ah-accent);
+    text-decoration: none;
+    font-size: 12px;
+    max-width: 280px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pill:hover { border-color: rgba(94,139,255,.8); color: #dbe4ff; text-decoration: none; }
+  .pill .arrow { opacity: .8; color: var(--ah-muted); }
+  .bookmark-section {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ah-border-subtle);
+  }
+  .bookmark-pills { margin-top: 8px; }
+  .bookmark-favicon {
+    border-radius: calc(var(--ah-radius) / 2);
+    width: 16px;
+    height: 16px;
+    object-fit: cover;
+  }
+  .prefs-grid { display: flex; flex-direction: column; gap: 12px; }
+  .range { display: flex; flex-direction: column; gap: 6px; color: var(--ah-text); }
+  .range-control { display: flex; align-items: center; gap: 8px; }
+  .slider-value { min-width: 24px; text-align: center; font-weight: 600; }
+  .toggle-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+  .toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--ah-text);
+  }
+  .toggle-control {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    flex: 0 0 auto;
+  }
+  .toggle-control input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .toggle-switch {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--ah-radius-pill);
+    background: var(--ah-border-strong);
+    border: 1px solid var(--ah-border-subtle);
+    transition: background .2s ease, border-color .2s ease;
+  }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--ah-text);
+    transition: transform .2s ease, background .2s ease;
+  }
+  .toggle-control input:checked + .toggle-switch {
+    background: rgba(94,139,255,.4);
+    border-color: rgba(94,139,255,.8);
+  }
+  .toggle-control input:checked + .toggle-switch::after { transform: translateX(16px); background: #fff; }
   .panel-mode { margin-top: 12px; }
-  .radio-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
-  .radio-option { display:flex; align-items:center; gap:6px; padding:8px 10px; border-radius:12px; border:1px solid var(--input-border); background:var(--input-bg); color:var(--text); font-size:13px; cursor:pointer; }
-  .radio-option input { margin:0; }
-  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
-
-  .section { margin-bottom: 16px; }
-  .list { margin-top: 8px; border-top:1px solid var(--border); }
-  @media (max-width: 720px) { .wrap { padding: 0 12px; } .card { padding: 14px; } }
-
-  .combo { display:flex; gap:8px; align-items: center; }
-  .combo input { flex: 1 1 auto; width: auto !important; min-width: 0; }
-  .combo button { white-space: nowrap; }
-  .searchRow { margin-top: 10px; }
-input{width:auto;}
-</style>
-<style>
-.prefs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;align-items:center}
-.prefs-grid .range{display:flex;align-items:center;gap:8px}
-.prefs-grid label.checkbox{display:flex;align-items:center;gap:8px;white-space:nowrap}
-@media(max-width:600px){.prefs-grid{grid-template-columns:1fr}}
-input{width:auto;}
-</style>
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .radio-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: var(--ah-radius-pill);
+    border: 1px solid var(--ah-border-subtle);
+    cursor: pointer;
+    color: var(--ah-text);
+  }
+  .radio-option input { margin: 0; }
+  .radio-option:hover { border-color: var(--ah-accent); }
+  .ah-slider {
+    width: 100%;
+    accent-color: var(--ah-accent);
+  }
+  .ah-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ah-accent);
+    cursor: pointer;
+  }
+  .ah-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ah-accent);
+    cursor: pointer;
+    border: none;
+  }
+  .ah-slider::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: var(--ah-radius-pill);
+    background: var(--ah-border-strong);
+  }
+  .ah-slider::-moz-range-track {
+    height: 4px;
+    border-radius: var(--ah-radius-pill);
+    background: var(--ah-border-strong);
+  }
+  @media (max-width: 720px) {
+    .options-root { padding: 20px 16px; }
+    .item { grid-template-columns: 1fr; }
+    .field-grid { grid-template-columns: 1fr; }
+    .actions-row { flex-direction: column; align-items: flex-start; }
+  }
+  </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1><span data-i18n="optTitle">Access Helper — Settings</span></h1>
-    <div class="card">
-      <div class="section grid2">
-        <div>
-          <label data-i18n="domainLabel">Domain</label>
-          <input id="domain" placeholder="example.com" />
+  <div class="options-shell">
+    <div class="popup-root options-root">
+      <header class="popup-header">
+        <h1><span data-i18n="optTitle">Access Helper — Settings</span></h1>
+        <p class="popup-subtitle" data-i18n="appDesc">Shows official mirrors and your related bookmarks right on search pages.</p>
+      </header>
+
+      <section class="popup-section">
+        <div class="field-grid">
+          <label class="field">
+            <span class="field-label" data-i18n="domainLabel">Domain</span>
+            <input id="domain" placeholder="example.com" />
+          </label>
+          <label class="field">
+            <span class="field-label" data-i18n="altsLabel">Official alternates (comma-separated)</span>
+            <div class="combo">
+              <input id="alts" placeholder="example.org, example.net" />
+              <button id="add" type="button" class="btn btn-accent"><span data-i18n="addBtn">Add</span></button>
+            </div>
+          </label>
         </div>
-        <div>
-          <label data-i18n="altsLabel">Official alternates (comma-separated)</label>
-          <div class="combo">
-            <input id="alts" placeholder="example.org, example.net" />
-            <button id="add"><span data-i18n="addBtn">Add</span></button>
+        <div class="actions-row">
+          <button id="exportBtn" type="button" class="btn"><span data-i18n="exportBtn">Export JSON</span></button>
+          <button id="importBtn" type="button" class="btn"><span data-i18n="importBtn">Import JSON</span></button>
+          <span class="muted small" data-i18n="jsonFormatHelp">JSON format: {"example.com":["example.org","example.net"]}</span>
+        </div>
+      </section>
+
+      <section class="popup-section" id="prefs">
+        <div class="section-heading" data-i18n="prefsHeading">Advanced settings</div>
+        <div class="prefs-grid">
+          <label class="range">
+            <span class="field-label" data-i18n="prefSensitivity">Sensitivity (min brand length)</span>
+            <div class="range-control">
+              <input id="prefMinToken" class="ah-slider" type="range" min="2" max="6" value="2" />
+              <span id="prefMinTokenVal" class="slider-value">2</span>
+            </div>
+          </label>
+          <div class="toggle-group">
+            <label class="toggle">
+              <span class="toggle-text" data-i18n="prefUnicode">Unicode tokenization (if available)</span>
+              <span class="toggle-control">
+                <input id="prefUnicode" type="checkbox" checked />
+                <span class="toggle-switch" aria-hidden="true"></span>
+              </span>
+            </label>
+            <label class="toggle">
+              <span class="toggle-text" data-i18n="prefShowBookmarks">Show bookmarks on SERP</span>
+              <span class="toggle-control">
+                <input id="prefShowBookmarks" type="checkbox" checked />
+                <span class="toggle-switch" aria-hidden="true"></span>
+              </span>
+            </label>
+            <label class="toggle">
+              <span class="toggle-text" data-i18n="prefShowBadge">Badge with bookmarks count</span>
+              <span class="toggle-control">
+                <input id="prefShowBadge" type="checkbox" checked />
+                <span class="toggle-switch" aria-hidden="true"></span>
+              </span>
+            </label>
+          </div>
+          <div class="panel-mode">
+            <div class="muted" data-i18n="panelModeLabel">SERP panel mode</div>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="panelMode" value="icon" />
+                <span data-i18n="panelModeIcon">Badge only (hide panel)</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="panelMode" value="chip" checked />
+                <span data-i18n="panelModeChip">Badge + compact chip</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="panelMode" value="auto" />
+                <span data-i18n="panelModeAuto">Badge + expanded panel</span>
+              </label>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="section row">
-        <button id="exportBtn"><span data-i18n="exportBtn">Export JSON</span></button>
-        <button id="importBtn"><span data-i18n="importBtn">Import JSON</span></button>
-        <span class="muted" data-i18n="jsonFormatHelp">JSON format...</span>
-      </div>
-
-      <div class="section" id="prefs" style="margin-top:18px;">
-  <h2 style="font-size:16px; margin:0 0 8px;">Доп. настройки</h2>
-  <div class="prefs-grid">
-    <label class="range">Чувствительность (мин. длина бренда):
-      <input id="prefMinToken" type="range" min="2" max="6" value="2"/>
-      <span id="prefMinTokenVal" style="min-width:20px;text-align:center">2</span>
-    </label>
-    <label class="checkbox"><input id="prefUnicode" type="checkbox" checked> Unicode‑токенизация (если доступна)</label>
-    <label class="checkbox"><input id="prefShowBookmarks" type="checkbox" checked> Показывать закладки на SERP</label>
-    <label class="checkbox"><input id="prefShowBadge" type="checkbox" checked> Значок с количеством закладок</label>
-    <div class="panel-mode">
-      <div class="muted" data-i18n="panelModeLabel">Режим панели на SERP</div>
-      <div class="radio-group">
-        <label class="radio-option">
-          <input type="radio" name="panelMode" value="icon" />
-          <span data-i18n="panelModeIcon">Только значок</span>
+      <section class="popup-section list-section">
+        <label class="field">
+          <span class="field-label" data-i18n="searchLabel">Filter domains</span>
+          <input id="search" placeholder="..." data-i18n-placeholder="searchPlaceholder" />
         </label>
-        <label class="radio-option">
-          <input type="radio" name="panelMode" value="chip" checked />
-          <span data-i18n="panelModeChip">Значок + компактный чип</span>
-        </label>
-        <label class="radio-option">
-          <input type="radio" name="panelMode" value="auto" />
-          <span data-i18n="panelModeAuto">Значок + сразу раскрытая панель</span>
-        </label>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="searchRow"><label data-i18n="searchLabel">Filter domains</label><input id="search" placeholder="..." data-i18n-placeholder="searchPlaceholder" /></div><div class="list" id="list"></div>
-<div class="section" id="bmSection" style="margin-top:12px; display:none;"><div class="muted" data-i18n="bookmarksHeading">Related bookmarks</div><div id="bmResults" class="alts" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;"></div></div>
+        <div class="list" id="list"></div>
+        <div class="bookmark-section" id="bmSection" style="display:none;">
+          <div class="muted" data-i18n="bookmarksHeading">Related bookmarks</div>
+          <div id="bmResults" class="alts bookmark-pills"></div>
+        </div>
+      </section>
     </div>
   </div>
   <script src="options_i18n.js"></script>
