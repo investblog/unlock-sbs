@@ -1,12 +1,5 @@
-function getIconUrl(path) {
-  try {
-    return chrome.runtime.getURL(path);
-  } catch (e) {
-    return '';
-  }
-}
-const ICON_LOCKED_URL = getIconUrl('icons/locked.svg');
-const ICON_UNLOCKED_URL = getIconUrl('icons/unlocked.svg');
+const ICON_LOCKED = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="11" width="12" height="9" rx="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M9 11V8.5a3 3 0 0 1 6 0V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="15" r="1.4" fill="currentColor"/></svg>`;
+const ICON_UNLOCKED = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="11" width="12" height="9" rx="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M15 11V8.5a3 3 0 0 0-6 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="15" r="1.4" fill="currentColor"/></svg>`;
 
 function _(id, fallback=''){ try { return chrome.i18n.getMessage(id) || fallback; } catch(e){ return fallback; } }
 
@@ -36,20 +29,13 @@ function setStateIndicator(hasTips) {
   const unlocked = !!hasTips;
   row.classList.toggle('state-ok', unlocked);
   row.classList.toggle('state-wait', !unlocked);
-  const iconUrl = unlocked ? ICON_UNLOCKED_URL : ICON_LOCKED_URL;
-  icon.innerHTML = '';
-  if (iconUrl) {
-    const img = document.createElement('img');
-    img.src = iconUrl;
-    img.alt = '';
-    icon.appendChild(img);
-  }
+  icon.innerHTML = unlocked ? ICON_UNLOCKED : ICON_LOCKED;
   text.textContent = unlocked ? _('stateUnlocked','Tips ready') : _('stateLocked','Waiting for tips');
 }
 
 function buildLink(href, text, id) {
   const a = document.createElement('a');
-  a.className = 'btn';
+  a.className = 'ah-suggest-btn';
   a.href = href;
   a.textContent = text;
   if (id) a.id = id;

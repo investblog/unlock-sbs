@@ -80,7 +80,16 @@ function toHost(input){ return toHref(input).host; }
       try { callback(fallback); } catch(__){}
     }
   }
-  const BRAND_ICON_DATA_URL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMTEuODI5IDYxLjY2NiAzLjYxOS0xMi4xOS0xMC41MjIgMi45OGM2Ljg5LTQuOTUgMTMuODMyLTkuNzk1IDIwLjY1LTE0Ljk0NWwtMy44MDYtMS45NDIgOS41MS00Ljk4OS0uMDM4LS4wOTJjLTEuNTY0LjU1NS0zLjEzOCAxLjA4Ni00LjY5MSAxLjY3LTEuOTk1Ljc1Mi0zLjk3MiAxLjU1My01Ljk2NCAyLjMxNGEuNjcuNjcgMCAwIDEtLjUzOS0uMDU3IDc2IDc2IDAgMCAxLTkuNTU1LTcuOTM0Yy0uMDYzLS4wNjMtLjExNi0uMTM3LS4yMDQtLjI0NGExMTEuNSAxMTEuNSAwIDAgMCAxNi4yMTUgMS41OWMtMi4zMDMtLjQ0LTQuNjA0LS44OS02LjkwOS0xLjMxOHEtMy4yMTUtLjU5OC02LjQzOC0xLjE2M2MtMS4yMzQtLjIxOC0yLjQ3My0uNDA3LTMuNzA3LS42MjMtLjE0OC0uMDI2LS4zMzItLjEwNy0uNDE0LS4yMjMtMi41Mi0zLjUzNC00Ljk2OC03LjExNS02Ljk5NS0xMC45NjMtLjA5LS4xNzEtLjE2NC0uMzUtLjI5Mi0uNjIyTDIzLjI0IDIxLjY2bC4wMzItLjA2OGMtLjg5LS40NzMtMS43NzktLjk1LTIuNjctMS40Mi0zLjU1OS0xLjg3Ni03LjEyLTMuNzUtMTAuNjc1LTUuNjM1YS45LjkgMCAwIDEtLjM5MS0uNDE2QzguMTA1IDEwLjU4MyA2LjY4OCA3LjA0IDUuMjcgMy40OTVjLS4wMDktLjAyMi4wMS0uMDU2LjAyNS0uMTIyIDEuNDM4Ljg5OSAyLjg2NyAxLjc4OSA0LjI5MyAyLjY4MyA2LjI3NSAzLjkzMiAxMi41NSA3Ljg2MyAxOC44MiAxMS44MDQuMzEuMTk1LjU4OC40NTUuODQ2LjcyIDIuMDMgMi4wNzggNC4wNjcgNC4xNTMgNi4wNzQgNi4yNTQgMi4wOTMgMi4xOTIgNC4xNTYgNC40MTIgNi4yMyA2LjYxOS4wNTMuMDU1LjA5OS4xMTUuMTU0LjE4LTQuNjk2IDMuMDU1LTkuNjg2IDUuNi0xNC4yMjggOC44NzRsMTYuNjk3LTguMjQzLTguMzIzLTguNzY2IDEuOTEzLTEuNDZjMS40MTgtMS4wODIgMi44MzItMi4xNyA0LjI1Ni0zLjI0NiAxLjA5LS44MjQgMi4zNTQtMS4yMTMgMy42ODItMS40MyAyLjY0LS40MzQgNC43MjEuNjA5IDYuNDggMi40NzUuMzgzLjQwNi43MTcuODU4IDEuMDk2IDEuMjY3LjEzOS4xNS4zMjkuMjc0LjUyLjM0OS44MTYuMzE3IDEuNjQuNjEgMi40ODQgMS4wMTctLjY1Ny4yMjYtMS4zLjUxLTEuOTcyLjY2NS0xLjY0Ni4zNzgtMy4xMjQgMS4wNTktNC40MTEgMi4xNjYtLjQyNS4zNjUtLjczNC43NjUtLjkxMyAxLjMwNS0uODc1IDIuNjM3LTEuNzM3IDUuMjgtMi42NzUgNy44OTQtLjkgMi41MDMtMi42MjQgNC4zODUtNC42OTEgNi4wMDQtMi4yMzggMS43NTMtNC43ODcgMi43MzMtNy41NSAzLjI2NS0yLjMxMi40NDUtNC42MzIuMzg1LTYuOTU5LjIzMS0uNDgtLjAzMS0uOTU5LS4wODgtMS40MzgtLjA5Mi0uMTI4IDAtLjI5NS4xMjUtLjM3OS4yNC0xLjY0NyAyLjI1NC0zLjIzNyA0LjU1My00LjkzNiA2Ljc2Ni0yLjc1MSAzLjU4MS01LjU3MyA3LjEwNy04LjM2NiAxMC42NTQtLjAyNC4wMzEtLjA3LjA0NC0uMTY3LjF6IiBmaWxsPSJjdXJyZW50Q29sb3IiLz48cGF0aCBkPSJNMzguMDIzIDUuNTIyYzIuMzkgMy4wNzcgMy44MyA2LjU3NSA0Ljg2OCAxMC4yNjMuMDM2LjEyNC0uMDU2LjM2Ni0uMTY0LjQzNS0uNjEuMzkyLTEuMjQyLjc0OC0xLjg5MSAxLjEzLS4zOS0xLjE1OC0uNzU4LTIuMzI5LTEuMTc4LTMuNDgtLjkzMS0yLjU1Ni0yLjA1Ni01LjAxNS0zLjgxNC03LjEzLS43NzYtLjkzNC0xLjY5NC0xLjY4OC0yLjkxNS0xLjk3LTEuNTk3LS4zNjctMi45MjEuMTcyLTQuMDgyIDEuMjUtMS43ODUgMS42Ni0yLjk2NiAzLjcyLTMuOTI3IDUuOTI0LS4yMDIuNDY0LS4zOTcuOTMtLjYwMyAxLjQxNmwtMi4xLTEuMzVjLjkxNS0yLjI3NyAxLjg4Ni00LjQ5NSAzLjY0LTYuNDQ1LS40OC4xMTMtLjgyOC4xODQtMS4xNy4yNzdhMzIuMiAzMi4yIDAgMCAwLTYuOTU4IDIuNzkyYy0uMjUxLjEzNy0uNDMuMTM1LS42Ny0uMDE0LS42NTgtLjQwOC0xLjMzNC0uNzg2LTIuMDU1LTEuMjA0LjEzMy0uMDk1LjIzNi0uMTczLjM0NC0uMjQyIDMuNjY3LTIuMzI1IDcuNjQxLTMuODUyIDExLjkzLTQuNTI4IDIuMzctLjM3MyA0Ljc2LS4zNiA3LjE1NC0uMjM2IDMuNTI2LjE4NSA2Ljg1NiAxLjExNCAxMC4wNzYgMi41MTEuMTU0LjA2Ny4zODkuMDYuNTQ2LS4wMDYgMi4yMDctLjk0NCA0LjI3LS4wMjcgNC43MTcgMi42NC4wNS4zLjE0Mi40OTkuMzc2LjY5MiAyLjc2IDIuMjg3IDUuMzM2IDQuNzU2IDcuMzY5IDcuNzMzIDIuMzE3IDMuMzkzIDMuODU2IDcuMTExIDQuNTMyIDExLjE3NS4wOTYuNTguMTg0IDEuMTYyLjI5NSAxLjczOC4wMjIuMTIuMTA0LjI1NS4yMDEuMzI3IDEuODY3IDEuMzc0IDEuOTU1IDMuNTU4LjE3IDUuMDMtLjMxNC4yNTgtLjQzNy41MTctLjUwNS45MTUtLjU0OSAzLjIxNS0xLjQ3NyA2LjMxLTIuOTQ1IDkuMjM4YTMxLjggMzEuOCAwIDAgMS03LjU1OSA5Ljc2NGMtLjI3OC4yNDMtLjQwNy40ODItLjQxLjg2NC0uMDE0IDEuNjQ1LS44MjUgMi44NjQtMi4xNzIgMy4yMDQtLjc3NS4xOTUtMS41NzcuMTYyLTIuMzExLS4yMTgtLjI1Mi0uMTMxLS40MzctLjEwOS0uNjc4LjAxMi0yLjgwOSAxLjM5Ny01LjczIDIuNDgzLTguODIgMy4wNTQtMi40MzUuNDUtNC44OS41OTYtNy4zNy40Mi00LjM5MS0uMzE2LTguNDg3LTEuNi0xMi4zNi0zLjY1Mi0uMDgyLS4wNDItLjE2MS0uMDktLjI2OC0uMTVsMS41NDctMS45NzQgNy4wNjIgMi43MmMtLjcxLTEuMTY0LTEuNDE4LTIuMTU2LTEuOTUtMy4yMzUtLjY0LTEuMjk4LTEuMTM2LTIuNjY4LTEuNjc5LTQuMDEzLS4wNTQtLjEzNi0uMDY2LS4zNTMuMDA3LS40NjMuNTMtLjc5OCAxLjA4Ny0xLjU4IDEuNjM5LTIuMzcyLjM1OSAxLjA0MS42OTYgMi4wNzcgMS4wNzQgMy4wOTkuNzUyIDIuMDMgMS42OTQgMy45NiAzLjE0NSA1LjU5NC45MTUgMS4wMzEgMiAxLjgwNCAzLjQxNCAyLjAwNCAxLjU4Ni4yMjUgMi44ODctLjM3OSA0LjAyNi0xLjQwNyAxLjc5My0xLjYxOSAyLjg3My0zLjcwMiAzLjc5Ny01Ljg4NyAxLjIyNC0yLjg5NSAxLjg4LTUuOTQ2IDIuNTA4LTkuMDA0LjAzMi0uMTYuMDg0LS4zNTQuMTk3LS40NTIuOTY2LS44NDYgMS45NDctMS42NzQgMi45NjItMi41MzktLjIwMy45NjgtLjQwMSAxLjkyMi0uNjA1IDIuODc0LS4zODIgMS44LS43NzYgMy41OTYtMS4xMzggNS4zOTktLjAzMi4xNjMuMDc3LjQyMi4yMDcuNTRhMzI2IDMyNiAwIDAgMCA0LjA3NSAzLjYyM2MuMTAzLjA5LjI3LjEzMi40MTMuMTUxLjQ5LjA2My45ODMuMTE5IDEuNDc3LjE1LjExNS4wMDcuMjYzLS4wNjYuMzU0LS4xNDggMy42MjctMy4yODQgNi40OTUtNy4xMDcgOC4yNDctMTEuNzFhMjUgMjUgMCAwIDAgMS40NTgtNS44MzNjLjAxNS0uMTItLjA2NS0uMjc3LS4xNS0uMzc4YTE5IDE5IDAgMCAwLTEuMDY3LTEuMjExLjc3Ljc3IDAgMCAwLS40OTctLjIwOWMtMS43MjUtLjAxNC0zLjQ1LS4wMDktNS4xNzYtLjAxaC0zLjk2NWMuMjY2LS43NzguNDk0LTEuNDkyLjc2Ny0yLjE4OS4wNC0uMTA0LjI4NS0uMTg0LjQzNS0uMTg1IDIuNTgtLjAwOSA1LjE2Mi0uMDE0IDcuNzQyLjAwOC4zOTEuMDAzLjU5Ny0uMTAyLjc4LS40NTguMTcxLS4zMzQuNDI2LS42OTEuNzQtLjg2OS40MzMtLjI0NC40MDgtLjU2Mi4zNTgtLjkyNi0uNzgzLTUuNzczLTMuMjQ4LTEwLjcxOC03LjM4My0xNC44MTItMS4xNjgtMS4xNTctMi40NDMtMi4yMDUtMy42NTItMy4zMi0uMjI4LS4yMTEtLjQwMy0uMTgyLS42NTQtLjA4Ni0xLjUwNS41NzUtMi45OC4xNTYtMy43MS0xLjEwNS0uMjM4LS40MTMtLjI5NS0uOTI5LS40NTItMS4zOTItLjA0Ny0uMTQtLjEyMi0uMzQtLjIzLS4zNzgtMS43NjYtLjYwNy0zLjU0LTEuMTkzLTUuMzEyLTEuNzgyLS4wMjctLjAwOC0uMDYuMDA1LS4xMDEuMDA5em0uNjIxIDUyLjU5MmMuMDczLjAwNS4xMjIuMDIuMTYzLjAwOWEzNi43IDM2LjcgMCAwIDAgNi4yOTQtMi40NTguNDYuNDYgMCAwIDAgLjIxMy0uMjYyYy4xNTEtLjU0My4yODItMS4wOTIuNDQtMS43MTRsLTMuMjQ4LTIuODIyYy0uOTcgMi42MTEtMi4wMzEgNS4xMjUtMy44NjEgNy4yNDdNMy45NjQgMjAuODE5Yy41MzYuOTIgMS4wNjYgMS44MjIgMS41OCAyLjczMi4wNDcuMDg1LjAxMy4yMzEtLjAxNC4zNDEtLjM4OCAxLjU3NC0uNzc1IDMuMTQ5LTEuMTgxIDQuNzE4LS4wNzIuMjc3LjAzMi4zODIuMjMxLjU2LjM5OC4zNTMuNzY3Ljc1NiAxLjA2OCAxLjE5NC4xNS4yMTYuMjY1LjI4LjUwNC4yOCAxLjkyNy0uMDA3IDMuODU0LS4wMDggNS43ODEuMDEuMjEyLjAwMi40NTguMDg1LjYyNi4yMTMuNzE4LjU0MyAxLjQxNCAxLjExNCAyLjExNSAxLjY4LjEyNi4xMDIuMjMuMjMxLjQzOC40NDRoLTMuMDdjLTEuOTU4IDAtMy45MTcuMDA1LTUuODc1LS4wMDYtLjI5Ny0uMDAyLS40NDguMDk0LS42Mi4zNWE1LjcgNS43IDAgMCAxLS45OSAxLjA4OGMtLjIxNi4xODYtLjMwMi4zMzUtLjI1LjYxMi43NzEgNC4wOTIgMi4yMDIgNy45MTggNC41NDYgMTEuMzguMTExLjE2NS4yMTUuMzM1LjMzOS41MzFMNy4wMDUgNDguNTljLS41OTYtLjk4OS0xLjItMS45MjMtMS43MzgtMi44OTVhMjkuOCAyOS44IDAgMCAxLTMuNDgtMTAuNDA3Yy0uMDctLjQ5MS0uMjU1LS44NDgtLjY3My0xLjE3OC0xLjUyMy0xLjIwMy0xLjQ3Ni0zLjU3LjA5LTQuNzA0LjM4Ny0uMjguNTE2LS41OTYuNTg4LTEuMDEzYTM5IDM5IDAgMCAxIDIuMDY4LTcuNDQ1Yy4wMTUtLjA0LjA1Ni0uMDY5LjEwNi0uMTI2eiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+';
+  const BRAND_ICON = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3"/><path d="M12 8.5a2.8 2.8 0 0 1 2.8 2.8c0 1.02-.5 1.92-1.28 2.43l.38 3.27h-3.8l.38-3.27A2.8 2.8 0 0 1 9.2 11.3 2.8 2.8 0 0 1 12 8.5Z" fill="currentColor"/></svg>`;
+  const ICON_LINKS = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 15h-1.5a3.5 3.5 0 0 1 0-7H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M15 9h1.5a3.5 3.5 0 0 1 0 7H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const ICON_BOOKMARK = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5h6a2 2 0 0 1 2 2v12l-5-2.5L7 19V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 5v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  function createSectionHeader(iconSvg, labelText) {
+    const div = document.createElement('div');
+    div.className = 'ah-header';
+    div.innerHTML = `<span class="ah-icon-wrap" aria-hidden="true">${iconSvg}</span><span>${labelText}</span>`;
+    return div;
+  }
+
   const PANEL_STYLE_ID = 'ah-serp-style';
   const TOAST_ID = 'ah-serp-toast';
 
@@ -94,28 +103,236 @@ function toHost(input){ return toHref(input).host; }
     const style = document.createElement('style');
     style.id = PANEL_STYLE_ID;
     style.textContent = `
-      #ah-serp { position: fixed; top: 16px; right: 16px; z-index: 2147483647; font-family: Roboto, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif; color:#e7ecf3; display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
-      #ah-serp * { box-sizing: border-box; font-family: inherit; }
-      #ah-serp .ah-chip { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; border:1px solid #223052; background:#121a2b; color:#e7ecf3; cursor:pointer; box-shadow:0 6px 20px rgba(0,0,0,.25); font-weight:600; font-size:13px; }
-      #ah-serp .ah-chip:focus-visible { outline:2px solid #4c8dff; outline-offset:2px; }
-      #ah-serp .ah-chip-icon { width:18px; height:18px; display:inline-flex; color:#e7ecf3; }
-      #ah-serp .ah-chip-icon img { width:100%; height:100%; display:block; }
-      #ah-serp .ah-panel { background:#121a2b; color:#e7ecf3; border:1px solid #223052; border-radius:12px; padding:12px 14px; box-shadow:0 6px 20px rgba(0,0,0,.25); width: min(560px, calc(100vw - 32px)); }
-      #ah-serp .ah-panel-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:4px; }
-      #ah-serp .ah-panel-title { font-weight:600; font-size:14px; }
-      #ah-serp .ah-panel-close { width:28px; height:28px; border:1px solid #2b3a5f; background:#1a2440; color:#e7ecf3; border-radius:6px; cursor:pointer; font-size:16px; line-height:26px; padding:0; }
-      #ah-serp .ah-panel-body { font-size:13px; line-height:1.5; }
-      #ah-serp .ah-panel-actions { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
-      #ah-serp .ah-panel-actions button { font-size:12px; padding:6px 10px; background:#1a2440; color:#e7ecf3; border:1px solid #2b3a5f; border-radius:8px; cursor:pointer; }
-      #ah-serp .ah-section { display:none; margin:6px 0 4px; }
-      #ah-serp .ah-section.active { display:block; }
-      #ah-serp .ah-pill-row { display:flex; flex-wrap:wrap; gap:8px; }
-      #ah-serp.ah-serp-expanded .ah-panel { display:block; }
-      #ah-serp.ah-serp-expanded .ah-chip { display:none; }
-      #ah-serp-toast { position:fixed; top:16px; right:16px; z-index:2147483647; background:#121a2b; color:#e7ecf3; border:1px solid #223052; border-radius:10px; padding:8px 12px; box-shadow:0 10px 24px rgba(0,0,0,.25); opacity:0; transform:translateY(-8px); transition:opacity .16s ease, transform .16s ease; pointer-events:none; font-family:Roboto, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif; font-size:13px; }
-      #ah-serp-toast.visible { opacity:1; transform:translateY(0); }
-      #ah-serp:not(.ah-serp-expanded) .ah-panel { display:none; }
+      :root {
+        --ah-bg: #0C1019;
+        --ah-card: #101625;
+        --ah-border-subtle: rgba(255,255,255,.04);
+        --ah-border-strong: #252c3c;
+        --ah-text: #E7E9F0;
+        --ah-muted: #9BA3B4;
+        --ah-accent: #5E8BFF;
+        --ah-radius: 10px;
+        --ah-radius-pill: 999px;
+        --ah-shadow: 0 10px 30px rgba(0,0,0,.35);
+        --ah-font: system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      #ah-serp {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 999999;
+        background: var(--ah-card);
+        color: var(--ah-text);
+        border-radius: var(--ah-radius);
+        border: 1px solid var(--ah-border-strong);
+        box-shadow: var(--ah-shadow);
+        font-family: var(--ah-font);
+        font-size: 13px;
+        line-height: 1.4;
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+        min-width: 0;
+      }
+      #ah-serp:not(.ah-serp-expanded) {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      #ah-serp * {
+        box-sizing: border-box;
+        font-family: inherit;
+      }
+      #ah-serp button {
+        background: none;
+        border: none;
+        padding: 0;
+        color: inherit;
+      }
+      #ah-serp .ah-icon-wrap {
+        display: inline-flex;
+        width: 16px;
+        height: 16px;
+        color: var(--ah-accent);
+      }
+      #ah-serp .ah-icon-wrap svg { width: 100%; height: 100%; display: block; }
+      #ah-serp .ah-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 9px;
+        border-radius: var(--ah-radius-pill);
+        border: 1px solid rgba(255,255,255,.08);
+        background: rgba(10,14,24,.9);
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        color: var(--ah-text);
+        font-weight: 600;
+        transition: border-color .2s ease, background .2s ease, transform .2s ease;
+      }
+      #ah-serp .ah-chip:hover {
+        border-color: rgba(94,139,255,.6);
+        background: rgba(15,20,33,.95);
+        transform: translateY(-1px);
+      }
+      #ah-serp .ah-chip:focus-visible { outline: 2px solid var(--ah-accent); outline-offset: 2px; }
+      #ah-serp .ah-chip-text {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      #ah-serp .ah-chip-count {
+        min-width: 20px;
+        padding: 2px 6px;
+        border-radius: var(--ah-radius-pill);
+        font-size: 11px;
+        line-height: 1;
+        background: rgba(94,139,255,.16);
+        color: #c4d4ff;
+        text-align: center;
+      }
+      #ah-serp .ah-panel {
+        width: min(520px, calc(100vw - 32px));
+        background: var(--ah-card);
+        color: var(--ah-text);
+        border: 1px solid var(--ah-border-strong);
+        border-radius: var(--ah-radius);
+        padding: 14px;
+        box-shadow: var(--ah-shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      #ah-serp .ah-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 4px;
+      }
+      #ah-serp .ah-panel-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--ah-muted);
+      }
+      #ah-serp .ah-panel-title .ah-icon-wrap { width: 18px; height: 18px; }
+      #ah-serp .ah-panel-close {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--ah-radius);
+        border: 1px solid var(--ah-border-subtle);
+        background: rgba(255,255,255,.04);
+        color: var(--ah-muted);
+        cursor: pointer;
+      }
+      #ah-serp .ah-panel-close:hover { color: var(--ah-text); border-color: rgba(94,139,255,.4); }
+      #ah-serp .ah-panel-close:focus-visible { outline: 2px solid rgba(94,139,255,.4); outline-offset: 2px; }
+      #ah-serp .ah-section {
+        display: none;
+        margin-top: 6px;
+        padding-top: 8px;
+        border-top: 1px solid var(--ah-border-subtle);
+      }
+      #ah-serp .ah-section.active { display: block; }
+      #ah-serp .ah-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--ah-muted);
+      }
+      #ah-serp .ah-section-note {
+        font-size: 12px;
+        color: var(--ah-muted);
+        margin-bottom: 4px;
+      }
+      #ah-serp .ah-pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+      #ah-serp .ah-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: var(--ah-radius-pill);
+        border: 1px solid var(--ah-border-subtle);
+        background: rgba(255,255,255,.02);
+        color: var(--ah-text);
+        text-decoration: none;
+        font-size: 12px;
+        transition: border-color .15s ease, color .15s ease, background .15s ease;
+      }
+      #ah-serp .ah-pill:hover { border-color: rgba(94,139,255,.8); color: #dbe4ff; }
+      #ah-serp .ah-pill-rich { background: rgba(255,255,255,.04); }
+      #ah-serp .ah-pill-label {
+        display: inline-flex;
+        align-items: center;
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      #ah-serp .ah-pill-arrow { color: var(--ah-muted); font-size: 12px; }
+      #ah-serp .ah-pill-icon {
+        border-radius: calc(var(--ah-radius) / 2);
+        width: 16px;
+        height: 16px;
+        object-fit: cover;
+      }
+      #ah-serp .ah-panel-body { font-size: 13px; }
+      #ah-serp .ah-tip { margin: 4px 0; color: var(--ah-muted); }
+      #ah-serp .ah-inline-link { color: var(--ah-accent); text-decoration: none; }
+      #ah-serp .ah-inline-link:hover { text-decoration: underline; }
+      #ah-serp .ah-panel-actions {
+        margin-top: 6px;
+        padding-top: 10px;
+        border-top: 1px solid var(--ah-border-subtle);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      #ah-serp .ah-panel-actions button {
+        padding: 6px 12px;
+        border-radius: var(--ah-radius-pill);
+        border: 1px solid var(--ah-border-strong);
+        background: rgba(255,255,255,.02);
+        color: var(--ah-text);
+        cursor: pointer;
+        transition: border-color .15s ease, color .15s ease, background .15s ease;
+      }
+      #ah-serp .ah-panel-actions button:hover { border-color: var(--ah-accent); color: var(--ah-accent); }
+      #ah-serp .ah-panel-actions button:focus-visible { outline: 2px solid rgba(94,139,255,.4); outline-offset: 2px; }
+      #ah-serp.ah-serp-expanded .ah-chip { display: none; }
+      #ah-serp:not(.ah-serp-expanded) .ah-panel { display: none; }
+      #ah-serp-toast {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 999999;
+        background: var(--ah-card);
+        color: var(--ah-text);
+        border: 1px solid var(--ah-border-strong);
+        border-radius: var(--ah-radius);
+        padding: 8px 12px;
+        box-shadow: var(--ah-shadow);
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: opacity .16s ease, transform .16s ease;
+        pointer-events: none;
+        font-family: var(--ah-font);
+        font-size: 13px;
+      }
+      #ah-serp-toast.visible { opacity: 1; transform: translateY(0); }
     `;
+
     (document.head || document.documentElement).appendChild(style);
   }
   function showToast(message){
@@ -198,17 +415,20 @@ function toHost(input){ return toHref(input).host; }
     if (el) return el;
     const box = document.createElement('div');
     const chipLabel = _('chipLabel', 'Unlock.SBS');
-    box.innerHTML = `
-      <div id="ah-serp">
-        <button id="ah-chip" class="ah-chip" type="button" aria-label="${_('serpPanelTitle','Search tips')}">
-          <span class="ah-chip-icon">${BRAND_ICON_DATA_URL ? `<img src="${BRAND_ICON_DATA_URL}" alt="" />` : ''}</span>
-          <span class="ah-chip-text">${chipLabel} · <span id="ah-chip-count">0</span></span>
-        </button>
-        <div class="ah-panel">
-          <div class="ah-panel-header">
-            <div class="ah-panel-title">${_('serpPanelTitle','Search tips')}</div>
-            <button id="ah-close-x" class="ah-panel-close" type="button" aria-label="${_('serpHide','Hide')}">×</button>
-          </div>
+      box.innerHTML = `
+        <div id="ah-serp">
+          <button id="ah-chip" class="ah-chip" type="button" aria-label="${_('serpPanelTitle','Search tips')}">
+            <span class="ah-icon-wrap" aria-hidden="true">${BRAND_ICON}</span>
+            <span class="ah-chip-text">
+              <span>${chipLabel}</span>
+              <span class="ah-chip-count" id="ah-chip-count">0</span>
+            </span>
+          </button>
+          <div class="ah-panel">
+            <div class="ah-panel-header">
+              <div class="ah-panel-title"><span class="ah-icon-wrap" aria-hidden="true">${BRAND_ICON}</span><span>${_('serpPanelTitle','Search tips')}</span></div>
+              <button id="ah-close-x" class="ah-panel-close" type="button" aria-label="${_('serpHide','Hide')}">×</button>
+            </div>
           <div id="ah-mirrors" class="ah-section"></div>
           <div id="ah-bookmarks" class="ah-section"></div>
           <div id="ah-body" class="ah-panel-body"></div>
@@ -228,9 +448,15 @@ function toHost(input){ return toHref(input).host; }
     if (sb) sb.addEventListener('click', ()=>{ try{ if(hasRuntime()) chrome.runtime.sendMessage({type:'ah:open-settings'}); }catch(e){} });
     return el;
   }
-  function makePlainLink(href, text) { return `<a href="${href}" target="_blank" rel="noreferrer" style="color:#a8c6ff; text-decoration:underline; cursor:pointer">${text}</a>`; }
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch] || ch));
+  }
+  function makePlainLink(href, text) {
+    return `<a href="${href}" target="_blank" rel="noreferrer" class="ah-inline-link">${escapeHtml(text)}</a>`;
+  }
   function makePillLink(href, text) {
-    return `<a href="${href}" target="_blank" rel="noreferrer" style="color:#a8c6ff; text-decoration:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid #2b3a5f; border-radius:999px; background:#1a2440">${text}<span style="opacity:.9">⭢</span></a>`;
+    const label = escapeHtml(text);
+    return `<a href="${href}" target="_blank" rel="noreferrer" class="ah-pill"><span class="ah-pill-label">${label}</span><span class="ah-pill-arrow">⭢</span></a>`;
   }
 
   // bookmarks via background
@@ -293,18 +519,20 @@ function toHost(input){ return toHref(input).host; }
             if (!showedMirrors) {
               showedMirrors = true;
               mirrorsWrap.classList.add('active');
-              const label = document.createElement('div');
-              label.style.cssText='font-size:13px; color:#a9b4c7; margin-bottom:6px;';
-              label.textContent = `${_('serpTipAlternates','Official alternates from your settings:')} ${key}:`;
-              mirrorsWrap.appendChild(label);
+              const headerLabel = (_('serpTipAlternates','Official alternates from your settings:') || '').replace(/:\s*$/, '');
+              mirrorsWrap.appendChild(createSectionHeader(ICON_LINKS, headerLabel));
             }
+            const note = document.createElement('div');
+            note.className = 'ah-section-note';
+            note.textContent = key;
+            mirrorsWrap.appendChild(note);
             const row = document.createElement('div');
             row.className = 'ah-pill-row';
             alts.forEach(a => {
               const obj = toHref(a);
               const pill = document.createElement('span');
               pill.innerHTML = makePillLink(obj.href, obj.host);
-              const anchor = pill.firstChild; if (anchor && anchor.tagName==='A') anchor.title = obj.href; row.appendChild(anchor);
+              const anchor = pill.firstElementChild; if (anchor && anchor.tagName==='A') anchor.title = obj.href; row.appendChild(anchor);
             });
             mirrorsWrap.appendChild(row);
           }
@@ -343,20 +571,17 @@ function toHost(input){ return toHref(input).host; }
 
             if (bookmarkHits.length && shouldRenderPanel && bmWrap) {
               bmWrap.classList.add('active');
-              const label = document.createElement('div');
-              label.style.cssText='font-size:13px; color:#a9b4c7; margin-bottom:6px;';
-              label.textContent = _(`bookmarksHeading`,`Related bookmarks`);
-              bmWrap.appendChild(label);
+              bmWrap.appendChild(createSectionHeader(ICON_BOOKMARK, _(`bookmarksHeading`,`Related bookmarks`)));
               const row = document.createElement('div');
               row.className = 'ah-pill-row';
               bookmarkHits.forEach(h => {
                 const a = document.createElement('a');
+                a.className = 'ah-pill ah-pill-rich';
                 a.href = h.url; a.target='_blank'; a.rel='noreferrer'; a.title = h.url;
-                a.style.cssText='display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #2b3a5f;border-radius:999px;background:#1a2440;color:#a8c6ff;text-decoration:none;cursor:pointer;max-width:260px;font-size:12px;';
-                const img = document.createElement('img'); let host=''; try{ host=new URL(h.url).hostname; }catch{}; img.src=`https://icons.duckduckgo.com/ip3/${host}.ico`; img.width=16; img.height=16; img.style.cssText='border-radius:3px; flex:0 0 auto;';
-                const span = document.createElement('span'); const t = h.title && h.title.trim() ? h.title.trim() : (new URL(h.url).hostname);
+                const img = document.createElement('img'); let host=''; try{ host=new URL(h.url).hostname; }catch{}; img.src=`https://icons.duckduckgo.com/ip3/${host}.ico`; img.className='ah-pill-icon'; img.alt='';
+                const span = document.createElement('span'); span.className='ah-pill-label'; const t = h.title && h.title.trim() ? h.title.trim() : (new URL(h.url).hostname);
                 span.textContent = t.length>28 ? t.slice(0,25)+'…' : t;
-                const arrow = document.createElement('span'); arrow.textContent='⭢'; arrow.style.opacity='.9';
+                const arrow = document.createElement('span'); arrow.textContent='⭢'; arrow.className='ah-pill-arrow';
                 a.append(img, span, arrow); row.appendChild(a);
               });
               bmWrap.appendChild(row);
@@ -382,7 +607,7 @@ function toHost(input){ return toHref(input).host; }
           }
         }
         tips.push(`${_('serpTipArchive','See archived copies:')} ${makePlainLink('https://web.archive.org/', 'Wayback Machine')}.`);
-        body.innerHTML = tips.map(t => `<div style="margin:4px 0">${t}</div>`).join('');
+        body.innerHTML = tips.map(t => `<div class="ah-tip">${t}</div>`).join('');
       }
     });
   }
