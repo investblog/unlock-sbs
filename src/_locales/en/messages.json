@@ -92,13 +92,10 @@
   "panelModeLabel": {
     "message": "SERP panel mode"
   },
-  "panelModeIcon": {
-    "message": "Badge only (hide panel)"
-  },
   "panelModeChip": {
     "message": "Badge + compact chip"
   },
-  "panelModeAuto": {
+  "panelModeOpen": {
     "message": "Badge + expanded panel"
   },
   "settingsTitle": {
