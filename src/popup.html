@@ -85,6 +85,25 @@
   .ah-btn-outline { background: transparent; color: var(--ah-text); border-color: var(--ah-border-strong); }
   .ah-btn-outline:hover { color: var(--ah-accent); border-color: var(--ah-accent); background: var(--ah-accent-soft); }
   .ah-btn-ghost { background: rgba(255,255,255,.02); color: var(--ah-text); border-color: var(--ah-border-subtle); }
+  .ah-icon {
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+  }
+  .ah-icon img,
+  .ah-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    fill: currentColor;
+  }
+  .ah-icon--sm { width: 14px; height: 14px; }
+  .ah-icon--lg { width: 20px; height: 20px; }
+  .ah-icon--main  { color: var(--ah-accent); }
+  .ah-icon--ok    { color: #25D0A4; }
+  .ah-icon--warn  { color: #FF6B6B; }
+  .ah-icon--muted { color: var(--ah-muted); }
   .popup-actions { display: flex; flex-wrap: wrap; gap: 8px; }
   .ah-toggle {
     display: flex;
@@ -140,7 +159,10 @@
 <body>
   <div class="popup-root">
     <header class="popup-header">
-      <h1>Unlock.SBS</h1>
+      <h1>
+        <span class="ah-icon ah-icon--main ah-icon--lg" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
+        <span>Unlock.SBS</span>
+      </h1>
       <p class="popup-subtitle">Быстрые действия и подсказки (Access Helper).</p>
     </header>
     <section class="popup-section">
