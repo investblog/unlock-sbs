@@ -54,7 +54,50 @@ async function openOptionsInSidePanel(tabId){
     await chrome.tabs.create({ url: chrome.runtime.getURL('options.html') });
   }
 }
-chrome.action.onClicked.addListener(async (tab) => { if (tab && tab.id) openOptionsInSidePanel(tab.id); });
+function getBadgeCount(tabId){
+  return new Promise((resolve) => {
+    try {
+      chrome.action.getBadgeText({ tabId }, (text) => {
+        if (chrome.runtime.lastError) return resolve(0);
+        const n = parseInt(text || '', 10);
+        resolve(Number.isFinite(n) ? n : 0);
+      });
+    } catch (e) { resolve(0); }
+  });
+}
+function getStoredPanelHash(){
+  return new Promise((resolve) => {
+    try {
+      chrome.storage.local.get('__ah_sidepanel_params', (val) => {
+        if (chrome.runtime.lastError) return resolve('');
+        const raw = val && val.__ah_sidepanel_params;
+        resolve(typeof raw === 'string' ? raw : '');
+      });
+    } catch (e) { resolve(''); }
+  });
+}
+async function openSuggestionsForTab(tabId){
+  const hash = await getStoredPanelHash();
+  const suffix = hash && hash.startsWith('#') ? hash : (hash ? `#${hash}` : '');
+  const base = chrome.runtime.getURL('suggest.html');
+  const target = `${base}${suffix}`;
+  try {
+    await openInSidePanel(tabId, target);
+    if (hash) await chrome.storage.local.set({ __ah_sidepanel_params: hash });
+  } catch (e) {
+    await chrome.tabs.create({ url: target });
+  }
+}
+chrome.action.onClicked.addListener(async (tab) => {
+  if (!tab || !tab.id) return;
+  try {
+    const badgeCount = await getBadgeCount(tab.id);
+    if (badgeCount > 0) await openSuggestionsForTab(tab.id);
+    else await openOptionsInSidePanel(tab.id);
+  } catch (e) {
+    await openOptionsInSidePanel(tab.id);
+  }
+});
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg && msg.type === 'ah:open-settings' && sender && sender.tab && sender.tab.id) {
     openOptionsInSidePanel(sender.tab.id);
