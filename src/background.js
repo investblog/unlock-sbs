@@ -65,12 +65,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-chrome.runtime.onMessage.addListener((msg, sender) => {
-  if (msg && msg.type === 'ah:serp-hints') {
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg && msg.type === 'ah:hints-updated') {
     const tabId = sender?.tab?.id ?? msg.tabId;
     if (tabId != null) {
       ahTabHints.set(tabId, { url: msg.url, hints: msg.hints });
     }
+  }
+  if (msg && msg.type === 'ah:get-hints-for-tab') {
+    const data = ahTabHints.get(msg.tabId) || null;
+    try { sendResponse({ data }); } catch (_) {}
+    return true;
   }
 });
 
@@ -100,14 +105,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     } catch (e) {}
     sendResponse && sendResponse({ ok: true });
     return; // no async
-  }
-});
-
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg && msg.type === 'ah:get-tab-hints') {
-    const data = ahTabHints.get(msg.tabId) || null;
-    sendResponse({ ok: true, data });
-    return true;
   }
 });
 

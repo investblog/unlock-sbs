@@ -284,17 +284,12 @@
 
       const renderHints = (data) => {
         if (!hintsBox || !hintsSection) return;
-        if (!data || !data.hints) { renderEmpty(); return; }
+        if (!data || !data.hints || !(data.hints.count > 0)) { renderEmpty(); return; }
 
         const { url, hints } = data;
         const alternates = Array.isArray(hints.alternates) ? hints.alternates : [];
         const bookmarks = Array.isArray(hints.bookmarks) ? hints.bookmarks : [];
         const tips = Array.isArray(hints.tips) ? hints.tips : [];
-        const hintsCount = Number.isFinite(hints.count)
-          ? hints.count
-          : (alternates.length + bookmarks.length + tips.length);
-
-        if (hintsCount <= 0) { renderEmpty(); return; }
 
         hintsBox.innerHTML = '';
         const groups = [];
@@ -383,13 +378,9 @@
 
         renderWaiting();
         try {
-          chrome.runtime.sendMessage({ type: 'ah:get-tab-hints', tabId: tab.id }, (resp) => {
+          chrome.runtime.sendMessage({ type: 'ah:get-hints-for-tab', tabId: tab.id }, (res) => {
             if (chrome.runtime.lastError) { renderEmpty(); return; }
-            if (resp && resp.ok) {
-              renderHints(resp.data);
-              return;
-            }
-            renderEmpty();
+            renderHints(res?.data);
           });
         } catch (e) {
           renderEmpty();

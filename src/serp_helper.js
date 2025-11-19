@@ -392,7 +392,11 @@ function toHost(input){ return toHref(input).host; }
   function sendSerpHints(hints){
     if (!hasRuntime()) return;
     try {
-      chrome.runtime.sendMessage({ type: 'ah:serp-hints', url: location.href, hints });
+      chrome.runtime.sendMessage({
+        type: 'ah:hints-updated',
+        url: location.href,
+        hints
+      });
     } catch(_){}
   }
 
