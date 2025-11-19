@@ -80,14 +80,27 @@ function toHost(input){ return toHref(input).host; }
       try { callback(fallback); } catch(__){}
     }
   }
-  const BRAND_ICON = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3"/><path d="M12 8.5a2.8 2.8 0 0 1 2.8 2.8c0 1.02-.5 1.92-1.28 2.43l.38 3.27h-3.8l.38-3.27A2.8 2.8 0 0 1 9.2 11.3 2.8 2.8 0 0 1 12 8.5Z" fill="currentColor"/></svg>`;
-  const BRAND_ICON_MAIN = `<span class="ah-icon ah-icon--main" aria-hidden="true">${BRAND_ICON}</span>`;
-  const ICON_LINKS = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 15h-1.5a3.5 3.5 0 0 1 0-7H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M15 9h1.5a3.5 3.5 0 0 1 0 7H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
-  const ICON_BOOKMARK = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5h6a2 2 0 0 1 2 2v12l-5-2.5L7 19V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 5v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
-  function createSectionHeader(iconSvg, labelText) {
+  function createIcon(type = 'brand', size = 'md', tone = 'main') {
+    const span = document.createElement('span');
+    span.className = `ah-icon ah-icon--${size} ah-icon--${tone}`;
+    span.setAttribute('aria-hidden', 'true');
+
+    const img = document.createElement('img');
+    img.alt = '';
+    try {
+      img.src = chrome.runtime.getURL(`icons/${type}.svg`);
+    } catch (_) {
+      img.src = `icons/${type}.svg`;
+    }
+
+    span.appendChild(img);
+    return span;
+  }
+  function createSectionHeader(iconType, labelText, size = 'sm', tone = 'muted') {
     const div = document.createElement('div');
     div.className = 'ah-header';
-    div.innerHTML = `<span class="ah-icon-wrap" aria-hidden="true">${iconSvg}</span><span>${labelText}</span>`;
+    div.append(createIcon(iconType, size, tone), document.createElement('span'));
+    div.lastElementChild.textContent = labelText;
     return div;
   }
 
@@ -176,21 +189,25 @@ function toHost(input){ return toHref(input).host; }
         color: var(--ah-muted);
       }
       #ah-serp .ah-btn-ghost:hover { color: var(--ah-text); border-color: rgba(94,139,255,.4); }
-      #ah-serp .ah-icon-wrap {
+      #ah-serp .ah-icon {
         display: inline-flex;
         width: 16px;
         height: 16px;
-        color: var(--ah-accent);
+        vertical-align: middle;
       }
-      #ah-serp .ah-icon-wrap svg { width: 100%; height: 100%; display: block; }
-      #ah-serp .ah-icon {
-        display: inline-flex;
-        width: 18px;
-        height: 18px;
-        color: var(--ah-accent);
+      #ah-serp .ah-icon img,
+      #ah-serp .ah-icon svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        fill: currentColor;
       }
-      #ah-serp .ah-icon--main { width: 20px; height: 20px; }
-      #ah-serp .ah-icon svg { width: 100%; height: 100%; display: block; }
+      #ah-serp .ah-icon--sm { width: 14px; height: 14px; }
+      #ah-serp .ah-icon--lg { width: 20px; height: 20px; }
+      #ah-serp .ah-icon--main  { color: var(--ah-accent); }
+      #ah-serp .ah-icon--ok    { color: #25D0A4; }
+      #ah-serp .ah-icon--warn  { color: #FF6B6B; }
+      #ah-serp .ah-icon--muted { color: var(--ah-muted); }
       #ah-serp .ah-chip {
         display: inline-flex;
         align-items: center;
@@ -433,15 +450,15 @@ function toHost(input){ return toHref(input).host; }
         <div id="ah-serp">
           <button id="ah-dismiss" class="ah-btn ah-btn-ghost ah-dismiss" type="button" aria-label="${_('serpHide','Hide')}">×</button>
           <button id="ah-chip" class="ah-chip" type="button" aria-label="${_('serpPanelTitle','Search tips')}">
-            <span class="ah-icon-wrap" aria-hidden="true">${BRAND_ICON}</span>
             <span class="ah-chip-text">
+              <span id="ah-chip-icon"></span>
               <span>${chipLabel}</span>
               <span class="ah-chip-count" id="ah-chip-count">0</span>
             </span>
           </button>
           <div class="ah-serp-card">
             <div class="ah-panel-header">
-              <div class="ah-panel-title">${BRAND_ICON_MAIN}<span>${_('serpPanelTitle','Search tips')}</span></div>
+              <div class="ah-panel-title"><span id="ah-panel-icon"></span><span>${_('serpPanelTitle','Search tips')}</span></div>
               <button id="ah-close-x" class="ah-btn ah-btn-ghost ah-panel-close" type="button" aria-label="${_('serpHide','Hide')}">×</button>
             </div>
           <div id="ah-mirrors" class="ah-section"></div>
@@ -462,6 +479,10 @@ function toHost(input){ return toHref(input).host; }
     const dismissBtn = el.querySelector('#ah-dismiss'); if (dismissBtn) dismissBtn.addEventListener('click', () => dismissPanel(el));
     const sb = el.querySelector('#ah-settings');
     if (sb) sb.addEventListener('click', ()=>{ try{ if(hasRuntime()) chrome.runtime.sendMessage({type:'ah:open-settings'}); }catch(e){} });
+    const chipIconSlot = el.querySelector('#ah-chip-icon');
+    if (chipIconSlot) chipIconSlot.appendChild(createIcon('brand', 'sm', 'main'));
+    const panelIconSlot = el.querySelector('#ah-panel-icon');
+    if (panelIconSlot) panelIconSlot.appendChild(createIcon('unlocked', 'sm', 'ok'));
     return el;
   }
   function dismissPanel(el) {
@@ -542,7 +563,7 @@ function toHost(input){ return toHref(input).host; }
               showedMirrors = true;
               mirrorsWrap.classList.add('active');
               const headerLabel = (_('serpTipAlternates','Official alternates from your settings:') || '').replace(/:\s*$/, '');
-              mirrorsWrap.appendChild(createSectionHeader(ICON_LINKS, headerLabel));
+              mirrorsWrap.appendChild(createSectionHeader('unlocked', headerLabel, 'sm', 'ok'));
             }
             const note = document.createElement('div');
             note.className = 'ah-section-note';
@@ -595,7 +616,7 @@ function toHost(input){ return toHref(input).host; }
 
             if (bookmarkHits.length && shouldRenderPanel && bmWrap) {
               bmWrap.classList.add('active');
-              bmWrap.appendChild(createSectionHeader(ICON_BOOKMARK, _(`bookmarksHeading`,`Related bookmarks`)));
+              bmWrap.appendChild(createSectionHeader('brand', _(`bookmarksHeading`,`Related bookmarks`), 'sm', 'main'));
               const row = document.createElement('div');
               row.className = 'ah-pill-row';
               bookmarkHits.forEach(h => {
