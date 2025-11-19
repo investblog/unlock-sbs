@@ -92,6 +92,9 @@
   "serpTipYandex": {
     "message": "Same in Yandex:"
   },
+  "serpNoTips": {
+    "message": "No tips right now."
+  },
   "settingsBtn": {
     "message": "Settings"
   },

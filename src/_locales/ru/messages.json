@@ -92,6 +92,9 @@
   "serpTipYandex": {
     "message": "То же в Яндексе:"
   },
+  "serpNoTips": {
+    "message": "Подсказок нет"
+  },
   "settingsBtn": {
     "message": "Настройки"
   },

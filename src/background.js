@@ -101,11 +101,26 @@ async function openSuggestionsForTab(tabId){
     await openSuggestionsPopup(target);
   }
 }
+function requestSerpPanel(tabId) {
+  return new Promise((resolve) => {
+    try {
+      chrome.tabs.sendMessage(tabId, { type: 'ah:show-serp-panel' }, (resp) => {
+        if (chrome.runtime.lastError) return resolve({ ok: false });
+        resolve(resp && typeof resp === 'object' ? resp : { ok: false });
+      });
+    } catch (e) {
+      resolve({ ok: false });
+    }
+  });
+}
 chrome.action.onClicked.addListener(async (tab) => {
   if (!tab || !tab.id) return;
   try {
     const badgeCount = await getBadgeCount(tab.id);
-    if (badgeCount > 0) await openSuggestionsForTab(tab.id);
+    if (badgeCount > 0) {
+      const resp = await requestSerpPanel(tab.id);
+      if (!resp || !resp.ok) await openSuggestionsForTab(tab.id);
+    }
     else await openOptionsInSidePanel(tab.id);
   } catch (e) {
     await openOptionsInSidePanel(tab.id);
