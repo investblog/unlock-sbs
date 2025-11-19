@@ -113,9 +113,22 @@ function requestSerpPanel(tabId) {
     }
   });
 }
+function isEmptyTab(tab) {
+  const url = String((tab && tab.url) || '').trim();
+  if (!url) return true;
+  return (
+    /^about:blank$/i.test(url) ||
+    /^(chrome|edge):\/\/newtab\/?/i.test(url) ||
+    /^chrome-search:\/\/local-ntp\//i.test(url)
+  );
+}
 chrome.action.onClicked.addListener(async (tab) => {
   if (!tab || !tab.id) return;
   try {
+    if (isEmptyTab(tab)) {
+      await openOptionsInSidePanel(tab.id);
+      return;
+    }
     const badgeCount = await getBadgeCount(tab.id);
     if (badgeCount > 0) {
       const resp = await requestSerpPanel(tab.id);
