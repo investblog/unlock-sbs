@@ -71,13 +71,10 @@
   "panelModeLabel": {
     "message": "Режим панели на SERP"
   },
-  "panelModeIcon": {
-    "message": "Только значок (панель скрыта)"
-  },
   "panelModeChip": {
     "message": "Значок + компактный чип"
   },
-  "panelModeAuto": {
+  "panelModeOpen": {
     "message": "Значок + сразу раскрытая панель"
   },
   "appName": {

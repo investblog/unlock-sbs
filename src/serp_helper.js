@@ -102,7 +102,7 @@ function toHost(input){ return toHref(input).host; }
   const PANEL_STYLE_ID = 'ah-serp-style';
   const TOAST_ID = 'ah-serp-toast';
   function normalizePanelMode(mode){
-    if (mode === 'icon' || mode === 'auto') return mode;
+    if (mode === 'open' || mode === 'chip') return mode;
     return 'chip';
   }
 
@@ -530,32 +530,29 @@ function toHost(input){ return toHref(input).host; }
       if (!matchedKeys.length) { setBadgeCount(0); sendSerpHints(hintsPayload); if (existing) existing.remove(); return; }
 
       const panelMode = normalizePanelMode((__prefs && __prefs.panelMode) || 'chip');
-      const shouldRenderPanel = panelMode !== 'icon';
+      const isOpenMode = panelMode === 'open';
       let el = null;
       let body = null;
       let mirrorsWrap = null;
       let bmWrap = null;
-      if (shouldRenderPanel) {
-        el = injectPanel();
-        setPanelExpanded(el, panelMode === 'auto');
-        body = el.querySelector('#ah-body');
-        mirrorsWrap = el.querySelector('#ah-mirrors'); if (mirrorsWrap) { mirrorsWrap.innerHTML=''; mirrorsWrap.classList.remove('active'); }
-        bmWrap = el.querySelector('#ah-bookmarks'); if (bmWrap) { bmWrap.innerHTML=''; bmWrap.classList.remove('active'); }
-      } else if (existing) {
-        existing.remove();
-      }
+
+      el = injectPanel();
+      setPanelExpanded(el, isOpenMode);
+      body = el.querySelector('#ah-body');
+      mirrorsWrap = el.querySelector('#ah-mirrors'); if (mirrorsWrap) { mirrorsWrap.innerHTML=''; mirrorsWrap.classList.remove('active'); }
+      bmWrap = el.querySelector('#ah-bookmarks'); if (bmWrap) { bmWrap.innerHTML=''; bmWrap.classList.remove('active'); }
 
         let tipCount = matchedKeys.length;
         hintsPayload.count = tipCount;
         setBadgeCount(tipCount);
-        if (shouldRenderPanel && el) updateChipCount(el, tipCount);
+        if (el) updateChipCount(el, tipCount);
 
       hintsPayload.alternates = matchedKeys.map((key) => {
         const alts = (map[key] || map[key.replace(/^www\./,'')]) || [];
         return { domain: key, alternates: Array.isArray(alts) ? alts.filter(Boolean) : [] };
       }).filter(item => Array.isArray(item.alternates) && item.alternates.length);
 
-      if (shouldRenderPanel && mirrorsWrap) {
+      if (el && mirrorsWrap) {
         let showedMirrors = false;
         matchedKeys.forEach((key) => {
           const alts = (map[key] || map[key.replace(/^www\./,'')]) || [];
@@ -596,28 +593,28 @@ function toHost(input){ return toHref(input).host; }
             });
             slds.forEach(addKw);
 
-            const bookmarkHits = [];
-            const seen = new Set();
-            for (const n of list) {
-              const url = n.url || '';
-              if (!/^https?:/i.test(url)) continue;
+              const bookmarkHits = [];
+              const seen = new Set();
+              for (const n of list) {
+                const url = n.url || '';
+                if (!/^https?:/i.test(url)) continue;
               const lcurl = url.replace(/^[a-z]+:\/\/?/i,'').toLowerCase();
               let ok = false; for (const k of kw){ if (k && lcurl.includes(k)) { ok=true; break; } }
               if (!ok) continue;
               const key = `${n.title}|${url}`; if (seen.has(key)) continue; seen.add(key);
-              bookmarkHits.push({ title: n.title || url, url });
-              if (bookmarkHits.length >= 6) break;
-            }
+                bookmarkHits.push({ title: n.title || url, url });
+                if (bookmarkHits.length >= 6) break;
+              }
 
               tipCount = matchedKeys.length + bookmarkHits.length;
               hintsPayload.count = tipCount;
               setBadgeCount(tipCount);
-            if (shouldRenderPanel && el) updateChipCount(el, tipCount);
+              if (el) updateChipCount(el, tipCount);
 
             hintsPayload.bookmarks = bookmarkHits;
             sendSerpHints(hintsPayload);
 
-            if (bookmarkHits.length && shouldRenderPanel && bmWrap) {
+            if (bookmarkHits.length && el && bmWrap) {
               bmWrap.classList.add('active');
               bmWrap.appendChild(createSectionHeader('brand', _(`bookmarksHeading`,`Related bookmarks`), 'sm', 'main'));
               const row = document.createElement('div');
@@ -656,7 +653,7 @@ function toHost(input){ return toHref(input).host; }
         tips.push(`${_('serpTipArchive','See archived copies:')} ${makePlainLink('https://web.archive.org/', 'Wayback Machine')}.`);
         hintsPayload.tips = tips;
 
-        if (shouldRenderPanel && body) {
+        if (el && body) {
           body.innerHTML = tips.map(t => `<div class="ah-tip">${t}</div>`).join('');
         }
 

@@ -220,13 +220,17 @@ async function initPrefsUI(){
     panelRadios,
   };
   const prefs = await loadPrefs();
+  if (prefs.panelMode !== 'chip' && prefs.panelMode !== 'open') {
+    prefs.panelMode = 'chip';
+    chrome.storage.sync.set({ prefs: { ...prefs } });
+  }
   const minBrand = Math.max(1, Math.min(10, prefs.minBrandLength ?? prefs.minToken ?? 2));
   els.min.value = String(minBrand);
   els.minVal.textContent = String(minBrand);
   els.unicode.checked = !!prefs.useUnicodeTokenize;
   els.showBm.checked = !!prefs.showSerpBookmarks;
   els.badge.checked = !!prefs.showBadge;
-  const modeVal = ['icon','chip','auto'].includes(prefs.panelMode) ? prefs.panelMode : 'chip';
+  const modeVal = ['chip','open'].includes(prefs.panelMode) ? prefs.panelMode : 'chip';
   panelRadios.forEach(r => { r.checked = r.value === modeVal; });
 
   const debouncedSave = (() => {
@@ -248,7 +252,7 @@ async function initPrefsUI(){
       useUnicodeTokenize: !!els.unicode.checked,
       showSerpBookmarks: !!els.showBm.checked,
       showBadge: !!els.badge.checked,
-      panelMode: ['icon','chip','auto'].includes(prefMode) ? prefMode : 'chip',
+      panelMode: ['chip','open'].includes(prefMode) ? prefMode : 'chip',
     };
   }
   els.min.addEventListener('input', () => {
