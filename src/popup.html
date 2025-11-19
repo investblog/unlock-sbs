@@ -290,7 +290,9 @@
         const alternates = Array.isArray(hints.alternates) ? hints.alternates : [];
         const bookmarks = Array.isArray(hints.bookmarks) ? hints.bookmarks : [];
         const tips = Array.isArray(hints.tips) ? hints.tips : [];
-        const hintsCount = Number.isFinite(hints.count) ? hints.count : (alternates.length + bookmarks.length);
+        const hintsCount = Number.isFinite(hints.count)
+          ? hints.count
+          : (alternates.length + bookmarks.length + tips.length);
 
         if (hintsCount <= 0) { renderEmpty(); return; }
 
@@ -375,35 +377,22 @@
         groups.forEach((g) => hintsBox.appendChild(g));
       };
 
-      const requestAndRender = (tabId, badgeCount = 0) => {
-        try {
-          chrome.runtime.sendMessage({ type: 'ah:get-tab-hints', tabId }, (resp) => {
-            if (chrome.runtime.lastError) { badgeCount > 0 ? renderWaiting() : renderEmpty(); return; }
-            if (resp && resp.ok && resp.data && resp.data.hints) {
-              const count = Number.isFinite(resp.data.hints.count)
-                ? resp.data.hints.count
-                : ((Array.isArray(resp.data.hints.alternates) ? resp.data.hints.alternates.length : 0)
-                  + (Array.isArray(resp.data.hints.bookmarks) ? resp.data.hints.bookmarks.length : 0));
-              if (count > 0) { renderHints(resp.data); return; }
-            }
-            badgeCount > 0 ? renderWaiting() : renderEmpty();
-          });
-        } catch (e) {
-          badgeCount > 0 ? renderWaiting() : renderEmpty();
-        }
-      };
-
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const tab = tabs && tabs[0];
         if (!tab) { renderEmpty(); return; }
 
+        renderWaiting();
         try {
-          chrome.action.getBadgeText({ tabId: tab.id }, (text) => {
-            const badgeCount = Math.max(0, parseInt(text || '', 10) || 0);
-            requestAndRender(tab.id, badgeCount);
+          chrome.runtime.sendMessage({ type: 'ah:get-tab-hints', tabId: tab.id }, (resp) => {
+            if (chrome.runtime.lastError) { renderEmpty(); return; }
+            if (resp && resp.ok) {
+              renderHints(resp.data);
+              return;
+            }
+            renderEmpty();
           });
         } catch (e) {
-          requestAndRender(tab.id, 0);
+          renderEmpty();
         }
       });
     })();
