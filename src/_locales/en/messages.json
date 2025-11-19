@@ -3,7 +3,7 @@
     "message": "Access Helper: Legal Alternates & Archive"
   },
   "extDesc": {
-    "message": "Shows official alternate domains you add and archive links when a site fails to load, plus search-page tips."
+    "message": "Shows official alternate domains you add plus search-page tips and bookmark integrations right where you need them."
   },
   "optTitle": {
     "message": "Access Helper — Settings"
@@ -31,45 +31,6 @@
   },
   "deleteBtn": {
     "message": "Delete"
-  },
-  "suggestTitle": {
-    "message": "Site didn’t load — suggestions"
-  },
-  "quickActions": {
-    "message": "Quick actions"
-  },
-  "altsHeading": {
-    "message": "Official alternate domains (from your settings)"
-  },
-  "altsEmpty": {
-    "message": "No alternates for this domain in your settings yet."
-  },
-  "archiveHeading": {
-    "message": "Archive & checks"
-  },
-  "waybackBtn": {
-    "message": "Archive copy (Wayback)"
-  },
-  "siteSearchBtn": {
-    "message": "Site search"
-  },
-  "footerNote": {
-    "message": "Use only official alternates and follow local laws. The extension does not circumvent restrictions."
-  },
-  "labelURL": {
-    "message": "URL"
-  },
-  "labelError": {
-    "message": "Error"
-  },
-  "labelUnknown": {
-    "message": "unknown"
-  },
-  "labelRetry": {
-    "message": "Retry"
-  },
-  "labelTry": {
-    "message": "Try"
   },
   "serpPanelTitle": {
     "message": "Search tips"
@@ -145,11 +106,5 @@
   },
   "chipLabel": {
     "message": "Unlock.SBS"
-  },
-  "stateLocked": {
-    "message": "Waiting for tips"
-  },
-  "stateUnlocked": {
-    "message": "Tips ready"
   }
 }

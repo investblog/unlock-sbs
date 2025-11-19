@@ -26,11 +26,17 @@
     font-size: 13px;
     line-height: 1.5;
   }
+  body.options-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    background: radial-gradient(circle at top, rgba(94,139,255,.25), transparent 55%), var(--ah-bg);
+  }
   a { color: var(--ah-accent); }
   .options-shell {
-    max-width: 960px;
+    width: min(1100px, 100%);
     margin: 0 auto;
-    padding: 32px 16px 48px;
+    padding: 48px 24px 64px;
   }
   .popup-root {
     min-width: 320px;
@@ -42,11 +48,19 @@
     font-size: 13px;
   }
   .options-root {
-    width: min(760px, 100%);
-    padding: 24px 24px 28px;
+    width: min(920px, 100%);
+    padding: 32px 36px 40px;
     border-radius: var(--ah-radius);
     border: 1px solid var(--ah-border-subtle);
     box-shadow: var(--ah-shadow);
+  }
+  body.options-page .popup-root {
+    max-width: none;
+    min-width: 0;
+  }
+  body.options-page .options-root {
+    max-width: none;
+    width: 100%;
   }
   .popup-header {
     display: flex;
@@ -285,6 +299,10 @@
     border-radius: var(--ah-radius-pill);
     background: var(--ah-border-strong);
   }
+  @media (max-width: 960px) {
+    .options-shell { padding: 32px 16px 48px; }
+    .options-root { padding: 28px 20px 32px; }
+  }
   @media (max-width: 720px) {
     .options-root { padding: 20px 16px; }
     .item { grid-template-columns: 1fr; }
@@ -293,7 +311,7 @@
   }
   </style>
 </head>
-<body>
+<body class="options-page">
   <div class="options-shell">
     <div class="popup-root options-root">
       <header class="popup-header">

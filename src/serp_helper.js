@@ -92,6 +92,7 @@ function toHost(input){ return toHref(input).host; }
 
   const PANEL_STYLE_ID = 'ah-serp-style';
   const TOAST_ID = 'ah-serp-toast';
+  let __serpDismissed = false;
 
   function normalizePanelMode(mode){
     if (mode === 'icon' || mode === 'auto') return mode;
@@ -136,6 +137,20 @@ function toHost(input){ return toHref(input).host; }
         gap: 6px;
         min-width: 0;
       }
+      #ah-serp .ah-dismiss {
+        align-self: flex-end;
+        width: 22px;
+        height: 22px;
+        border-radius: var(--ah-radius-pill);
+        border: 1px solid var(--ah-border-subtle);
+        background: rgba(10,14,24,.85);
+        color: var(--ah-muted);
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+      }
+      #ah-serp .ah-dismiss:hover { color: var(--ah-text); border-color: rgba(94,139,255,.4); }
+      #ah-serp .ah-dismiss:focus-visible { outline: 2px solid rgba(94,139,255,.4); outline-offset: 2px; }
       #ah-serp:not(.ah-serp-expanded) {
         background: transparent;
         border: none;
@@ -410,6 +425,7 @@ function toHost(input){ return toHref(input).host; }
 
   // --- UI helpers ---
   function injectPanel() {
+    if (__serpDismissed) return null;
     ensurePanelStyles();
     let el = document.getElementById('ah-serp');
     if (el) return el;
@@ -417,6 +433,7 @@ function toHost(input){ return toHref(input).host; }
     const chipLabel = _('chipLabel', 'Unlock.SBS');
       box.innerHTML = `
         <div id="ah-serp">
+          <button id="ah-dismiss" class="ah-dismiss" type="button" aria-label="${_('serpHide','Hide')}">×</button>
           <button id="ah-chip" class="ah-chip" type="button" aria-label="${_('serpPanelTitle','Search tips')}">
             <span class="ah-icon-wrap" aria-hidden="true">${BRAND_ICON}</span>
             <span class="ah-chip-text">
@@ -444,9 +461,15 @@ function toHost(input){ return toHref(input).host; }
     const collapse = () => collapsePanel(el);
     const cx = el.querySelector('#ah-close-x'); if (cx) cx.addEventListener('click', collapse);
     const closeBtn = el.querySelector('#ah-close'); if (closeBtn) closeBtn.addEventListener('click', collapse);
+    const dismissBtn = el.querySelector('#ah-dismiss'); if (dismissBtn) dismissBtn.addEventListener('click', () => dismissPanel(el));
     const sb = el.querySelector('#ah-settings');
     if (sb) sb.addEventListener('click', ()=>{ try{ if(hasRuntime()) chrome.runtime.sendMessage({type:'ah:open-settings'}); }catch(e){} });
     return el;
+  }
+  function dismissPanel(el) {
+    __serpDismissed = true;
+    setBadgeCount(0);
+    try { if (el && el.remove) el.remove(); } catch(_) {}
   }
   function escapeHtml(str) {
     return String(str || '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch] || ch));
@@ -478,6 +501,7 @@ function toHost(input){ return toHref(input).host; }
   let lastUrl = location.href;
   function renderTips() {
     if (!isSerpHost()) return;
+    if (__serpDismissed) { setBadgeCount(0); return; }
     lastUrl = location.href;
       getPrefsAndAlternates((data) => {
         __prefs = data.prefs || DEFAULT_PREFS;
@@ -541,6 +565,7 @@ function toHost(input){ return toHref(input).host; }
 
       if (!__prefs || __prefs.showSerpBookmarks !== false) {
         fetchBookmarksOnce().then(list => {
+          if (__serpDismissed) return;
           try {
             const kw = new Set(tokens);
             const addKw = (s)=>{ const v=String(s||'').toLowerCase(); if(v && !TLD_STOP.has(v)) { kw.add(v); const t=ruToLat(v); if(t && t!==v && !TLD_STOP.has(t)) kw.add(t); if (v.includes('.')) { const sld=v.replace(/^www\\./,'').split('.')[0]; if(sld && !TLD_STOP.has(sld)) { kw.add(sld); const ts=ruToLat(sld); if(ts && ts!==sld && !TLD_STOP.has(ts)) kw.add(ts);} } } };
@@ -567,6 +592,7 @@ function toHost(input){ return toHref(input).host; }
 
             tipCount = matchedKeys.length + bookmarkHits.length;
             setBadgeCount(tipCount);
+            if (__serpDismissed) return;
             if (shouldRenderPanel && el) updateChipCount(el, tipCount);
 
             if (bookmarkHits.length && shouldRenderPanel && bmWrap) {
