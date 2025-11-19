@@ -80,22 +80,17 @@ function toHost(input){ return toHref(input).host; }
       try { callback(fallback); } catch(__){}
     }
   }
-  function createIcon(type = 'brand', size = 'md', tone = 'main') {
+  const createIcon = (type = 'brand', size = 'md', tone = 'main') => {
+    if (typeof ahCreateIcon === 'function') return ahCreateIcon(type, size, tone);
     const span = document.createElement('span');
     span.className = `ah-icon ah-icon--${size} ah-icon--${tone}`;
     span.setAttribute('aria-hidden', 'true');
-
     const img = document.createElement('img');
     img.alt = '';
-    try {
-      img.src = chrome.runtime.getURL(`icons/${type}.svg`);
-    } catch (_) {
-      img.src = `icons/${type}.svg`;
-    }
-
+    img.src = `icons/${type}.svg`;
     span.appendChild(img);
     return span;
-  }
+  };
   function createSectionHeader(iconType, labelText, size = 'sm', tone = 'muted') {
     const div = document.createElement('div');
     div.className = 'ah-header';
@@ -189,25 +184,25 @@ function toHost(input){ return toHref(input).host; }
         color: var(--ah-muted);
       }
       #ah-serp .ah-btn-ghost:hover { color: var(--ah-text); border-color: rgba(94,139,255,.4); }
-      #ah-serp .ah-icon {
+      .ah-icon {
         display: inline-flex;
         width: 16px;
         height: 16px;
         vertical-align: middle;
       }
-      #ah-serp .ah-icon img,
-      #ah-serp .ah-icon svg {
+      .ah-icon img,
+      .ah-icon svg {
         width: 100%;
         height: 100%;
         display: block;
         fill: currentColor;
       }
-      #ah-serp .ah-icon--sm { width: 14px; height: 14px; }
-      #ah-serp .ah-icon--lg { width: 20px; height: 20px; }
-      #ah-serp .ah-icon--main  { color: var(--ah-accent); }
-      #ah-serp .ah-icon--ok    { color: #25D0A4; }
-      #ah-serp .ah-icon--warn  { color: #FF6B6B; }
-      #ah-serp .ah-icon--muted { color: var(--ah-muted); }
+      .ah-icon--sm { width: 14px; height: 14px; }
+      .ah-icon--lg { width: 20px; height: 20px; }
+      .ah-icon--main  { color: var(--ah-accent); }
+      .ah-icon--ok    { color: #25D0A4; }
+      .ah-icon--warn  { color: #FF6B6B; }
+      .ah-icon--muted { color: var(--ah-muted); }
       #ah-serp .ah-chip {
         display: inline-flex;
         align-items: center;
@@ -400,6 +395,12 @@ function toHost(input){ return toHref(input).host; }
         }
       } catch(e){}
   }
+  function sendSerpHints(hints){
+    if (!hasRuntime()) return;
+    try {
+      chrome.runtime.sendMessage({ type: 'ah:serp-hints', url: location.href, hints });
+    } catch(_){}
+  }
 
   function tokenizeQuery(q){
     const str = String(q || '').toLowerCase();
@@ -451,14 +452,13 @@ function toHost(input){ return toHref(input).host; }
           <button id="ah-dismiss" class="ah-btn ah-btn-ghost ah-dismiss" type="button" aria-label="${_('serpHide','Hide')}">×</button>
           <button id="ah-chip" class="ah-chip" type="button" aria-label="${_('serpPanelTitle','Search tips')}">
             <span class="ah-chip-text">
-              <span id="ah-chip-icon"></span>
               <span>${chipLabel}</span>
               <span class="ah-chip-count" id="ah-chip-count">0</span>
             </span>
           </button>
           <div class="ah-serp-card">
             <div class="ah-panel-header">
-              <div class="ah-panel-title"><span id="ah-panel-icon"></span><span>${_('serpPanelTitle','Search tips')}</span></div>
+              <div class="ah-panel-title"><span>${_('serpPanelTitle','Search tips')}</span></div>
               <button id="ah-close-x" class="ah-btn ah-btn-ghost ah-panel-close" type="button" aria-label="${_('serpHide','Hide')}">×</button>
             </div>
           <div id="ah-mirrors" class="ah-section"></div>
@@ -479,10 +479,10 @@ function toHost(input){ return toHref(input).host; }
     const dismissBtn = el.querySelector('#ah-dismiss'); if (dismissBtn) dismissBtn.addEventListener('click', () => dismissPanel(el));
     const sb = el.querySelector('#ah-settings');
     if (sb) sb.addEventListener('click', ()=>{ try{ if(hasRuntime()) chrome.runtime.sendMessage({type:'ah:open-settings'}); }catch(e){} });
-    const chipIconSlot = el.querySelector('#ah-chip-icon');
-    if (chipIconSlot) chipIconSlot.appendChild(createIcon('brand', 'sm', 'main'));
-    const panelIconSlot = el.querySelector('#ah-panel-icon');
-    if (panelIconSlot) panelIconSlot.appendChild(createIcon('unlocked', 'sm', 'ok'));
+    const chipText = el.querySelector('.ah-chip-text');
+    if (chipText) chipText.prepend(createIcon('brand', 'sm', 'main'));
+    const panelTitle = el.querySelector('.ah-panel-title');
+    if (panelTitle) panelTitle.prepend(createIcon('brand', 'sm', 'main'));
     return el;
   }
   function dismissPanel(el) {
@@ -531,8 +531,17 @@ function toHost(input){ return toHref(input).host; }
       const domainTokens = findDomainsInQuery(q).map(s => s.toLowerCase());
       for (const d of domainTokens){ if (map[d] && !matchedKeys.includes(d)) matchedKeys.push(d); }
 
+      const hintsPayload = {
+        brands: matchedKeys.slice(),
+        alternates: [],
+        bookmarks: [],
+        tips: [],
+        timestamp: Date.now(),
+        query: q
+      };
+
       const existing = document.getElementById('ah-serp');
-      if (!matchedKeys.length) { setBadgeCount(0); if (existing) existing.remove(); return; }
+      if (!matchedKeys.length) { setBadgeCount(0); sendSerpHints(hintsPayload); if (existing) existing.remove(); return; }
 
       const panelMode = normalizePanelMode((__prefs && __prefs.panelMode) || 'chip');
       const shouldRenderPanel = panelMode !== 'icon';
@@ -553,6 +562,11 @@ function toHost(input){ return toHref(input).host; }
       let tipCount = matchedKeys.length;
       setBadgeCount(tipCount);
       if (shouldRenderPanel && el) updateChipCount(el, tipCount);
+
+      hintsPayload.alternates = matchedKeys.map((key) => {
+        const alts = (map[key] || map[key.replace(/^www\./,'')]) || [];
+        return { domain: key, alternates: Array.isArray(alts) ? alts.filter(Boolean) : [] };
+      }).filter(item => Array.isArray(item.alternates) && item.alternates.length);
 
       if (shouldRenderPanel && mirrorsWrap) {
         let showedMirrors = false;
@@ -614,6 +628,9 @@ function toHost(input){ return toHref(input).host; }
             if (__serpDismissed) return;
             if (shouldRenderPanel && el) updateChipCount(el, tipCount);
 
+            hintsPayload.bookmarks = bookmarkHits;
+            sendSerpHints(hintsPayload);
+
             if (bookmarkHits.length && shouldRenderPanel && bmWrap) {
               bmWrap.classList.add('active');
               bmWrap.appendChild(createSectionHeader('brand', _(`bookmarksHeading`,`Related bookmarks`), 'sm', 'main'));
@@ -635,25 +652,29 @@ function toHost(input){ return toHref(input).host; }
         });
       }
 
-      if (shouldRenderPanel && body) {
-        const tips = [];
-        tips.push(_(`serpTipCheck`, 'Check spelling, try a more precise phrase, or use quotes for exact match.'));
-        const host = location.host;
-        const isYandex = /^yandex\./i.test(host) || /(^|\.)ya\.ru$/i.test(host);
-        if (!isYandex && domainTokens.length) {
-          const d = domainTokens[0];
-          const hasSiteOrHost = /\b(?:site|host):\S+/i.test(q);
-          if (!hasSiteOrHost) {
-            const cleanedOnce = q.replace(/\b(?:site|host):\S+/gi, ' ').trim();
-            const escapedD = d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const cleaned = cleanedOnce.replace(new RegExp(escapedD, 'gi'), ' ').replace(/\s{2,}/g, ' ').trim();
-            const newQ = cleaned ? `site:${d} ${cleaned}` : `site:${d}`;
-            tips.push(`${_('serpTipRestrict','Try restricting the search to domain:')} <span>${makePlainLink(`https://www.google.com/search?q=${encodeURIComponent(newQ)}`, `site:${d}`)}</span>.`);
-          }
+      const tips = [];
+      tips.push(_(`serpTipCheck`, 'Check spelling, try a more precise phrase, or use quotes for exact match.'));
+      const host = location.host;
+      const isYandex = /^yandex\./i.test(host) || /(^|\.)ya\.ru$/i.test(host);
+      if (!isYandex && domainTokens.length) {
+        const d = domainTokens[0];
+        const hasSiteOrHost = /\b(?:site|host):\S+/i.test(q);
+        if (!hasSiteOrHost) {
+          const cleanedOnce = q.replace(/\b(?:site|host):\S+/gi, ' ').trim();
+          const escapedD = d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const cleaned = cleanedOnce.replace(new RegExp(escapedD, 'gi'), ' ').replace(/\s{2,}/g, ' ').trim();
+          const newQ = cleaned ? `site:${d} ${cleaned}` : `site:${d}`;
+          tips.push(`${_('serpTipRestrict','Try restricting the search to domain:')} <span>${makePlainLink(`https://www.google.com/search?q=${encodeURIComponent(newQ)}`, `site:${d}`)}</span>.`);
         }
-        tips.push(`${_('serpTipArchive','See archived copies:')} ${makePlainLink('https://web.archive.org/', 'Wayback Machine')}.`);
+      }
+      tips.push(`${_('serpTipArchive','See archived copies:')} ${makePlainLink('https://web.archive.org/', 'Wayback Machine')}.`);
+      hintsPayload.tips = tips;
+
+      if (shouldRenderPanel && body) {
         body.innerHTML = tips.map(t => `<div class="ah-tip">${t}</div>`).join('');
       }
+
+      sendSerpHints(hintsPayload);
     });
   }
 
