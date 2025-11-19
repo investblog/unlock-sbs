@@ -104,6 +104,18 @@
   "bookmarksHeading": {
     "message": "Похожие закладки"
   },
+  "panelModeLabel": {
+    "message": "Режим панели на SERP"
+  },
+  "panelModeIcon": {
+    "message": "Только значок (панель скрыта)"
+  },
+  "panelModeChip": {
+    "message": "Значок + компактный чип"
+  },
+  "panelModeAuto": {
+    "message": "Значок + сразу раскрытая панель"
+  },
   "appName": {
     "message": "Unlock.SBS — Smart Bypass Service"
   },
@@ -112,5 +124,14 @@
   },
   "settingsTitle": {
     "message": "Unlock.SBS — настройки"
+  },
+  "chipLabel": {
+    "message": "Unlock.SBS"
+  },
+  "stateLocked": {
+    "message": "Ждем подсказки"
+  },
+  "stateUnlocked": {
+    "message": "Подсказки готовы"
   }
 }

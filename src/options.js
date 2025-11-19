@@ -199,7 +199,7 @@ $('#importBtn').addEventListener('click', async () => {
 
 
 // --- Preferences ---
-const PREF_DEFAULTS = { minToken: 2, showSerpBookmarks: true, showBadge: true, useUnicodeTokenize: true };
+const PREF_DEFAULTS = { minToken: 2, showSerpBookmarks: true, showBadge: true, useUnicodeTokenize: true, panelMode: 'chip' };
 
 function loadPrefs(){
   return new Promise(resolve => {
@@ -210,12 +210,14 @@ function savePrefs(p){ return new Promise(r => chrome.storage.sync.set({ prefs: 
 
 async function initPrefsUI(){
   const box = document.querySelector('#prefs'); if (!box) return;
+  const panelRadios = Array.from(document.querySelectorAll('input[name="panelMode"]'));
   const els = {
     min: document.querySelector('#prefMinToken'),
     minVal: document.querySelector('#prefMinTokenVal'),
     unicode: document.querySelector('#prefUnicode'),
     showBm: document.querySelector('#prefShowBookmarks'),
     badge: document.querySelector('#prefShowBadge'),
+    panelRadios,
   };
   const prefs = await loadPrefs();
   els.min.value = String(prefs.minToken ?? 2);
@@ -223,6 +225,8 @@ async function initPrefsUI(){
   els.unicode.checked = !!prefs.useUnicodeTokenize;
   els.showBm.checked = !!prefs.showSerpBookmarks;
   els.badge.checked = !!prefs.showBadge;
+  const modeVal = ['icon','chip','auto'].includes(prefs.panelMode) ? prefs.panelMode : 'chip';
+  panelRadios.forEach(r => { r.checked = r.value === modeVal; });
 
   const debouncedSave = (() => {
     let t=null;
@@ -230,15 +234,19 @@ async function initPrefsUI(){
   })();
 
   function snapshot(){
+    const selected = panelRadios.find(r => r.checked);
+    const prefMode = selected ? selected.value : 'chip';
     return {
       minToken: parseInt(els.min.value,10) || 2,
       useUnicodeTokenize: !!els.unicode.checked,
       showSerpBookmarks: !!els.showBm.checked,
       showBadge: !!els.badge.checked,
+      panelMode: ['icon','chip','auto'].includes(prefMode) ? prefMode : 'chip',
     };
   }
   els.min.addEventListener('input', () => { els.minVal.textContent = els.min.value; debouncedSave(snapshot()); });
   [els.unicode, els.showBm, els.badge].forEach(ch => ch.addEventListener('change', () => debouncedSave(snapshot())));
+  panelRadios.forEach(r => r.addEventListener('change', () => debouncedSave(snapshot())));
 }
 
 (async function boot(){

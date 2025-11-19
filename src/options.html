@@ -60,6 +60,10 @@
   .combo { display:flex; gap:8px; align-items: center; }
   .combo input { flex: 1 1 auto; }
   .combo button { white-space: nowrap; }
+  .panel-mode { margin-top: 12px; }
+  .radio-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .radio-option { display:flex; align-items:center; gap:6px; padding:8px 10px; border-radius:12px; border:1px solid var(--input-border); background:var(--input-bg); color:var(--text); font-size:13px; cursor:pointer; }
+  .radio-option input { margin:0; }
   @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
 
   .section { margin-bottom: 16px; }
@@ -114,6 +118,23 @@ input{width:auto;}
     <label class="checkbox"><input id="prefUnicode" type="checkbox" checked> Unicode‑токенизация (если доступна)</label>
     <label class="checkbox"><input id="prefShowBookmarks" type="checkbox" checked> Показывать закладки на SERP</label>
     <label class="checkbox"><input id="prefShowBadge" type="checkbox" checked> Значок с количеством закладок</label>
+    <div class="panel-mode">
+      <div class="muted" data-i18n="panelModeLabel">Режим панели на SERP</div>
+      <div class="radio-group">
+        <label class="radio-option">
+          <input type="radio" name="panelMode" value="icon" />
+          <span data-i18n="panelModeIcon">Только значок</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="panelMode" value="chip" checked />
+          <span data-i18n="panelModeChip">Значок + компактный чип</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="panelMode" value="auto" />
+          <span data-i18n="panelModeAuto">Значок + сразу раскрытая панель</span>
+        </label>
+      </div>
+    </div>
   </div>
 </div>
 

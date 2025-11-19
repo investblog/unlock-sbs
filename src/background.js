@@ -31,8 +31,16 @@ chrome.webNavigation.onErrorOccurred.addListener(async (details) => {
     const paramUrl = '#u=' + encodeURIComponent(url) + '&e=' + encodeURIComponent(err);
     const full = chrome.runtime.getURL('suggest.html') + paramUrl;
 
-    try { await openInSidePanel(details.tabId, full); await chrome.storage.local.set({ __ah_sidepanel_params: paramUrl }); }
-    catch { await chrome.tabs.update(details.tabId, { url: full }); }
+    try {
+      await openInSidePanel(details.tabId, full);
+      await chrome.storage.local.set({ __ah_sidepanel_params: paramUrl });
+    } catch (e) {
+      try {
+        chrome.action.setBadgeBackgroundColor({ color: '#3b82f6' });
+        chrome.action.setBadgeText({ text: '!' });
+      } catch (_) {}
+      // Do not override the tab's URL; the side panel (and badge) act as the indicator.
+    }
   } catch(e) { /* ignore */ }
 });
 

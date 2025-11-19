@@ -18,6 +18,20 @@ function hostname(url) {
   try { return new URL(url).hostname.replace(/^www\./i, ''); } catch { return ''; }
 }
 
+function setStateIndicator(hasTips) {
+  const row = document.getElementById('stateRow');
+  const icon = document.getElementById('stateIcon');
+  const text = document.getElementById('stateText');
+  if (!row || !icon || !text) return;
+  const unlocked = !!hasTips;
+  row.classList.toggle('state-ok', unlocked);
+  row.classList.toggle('state-wait', !unlocked);
+  try {
+    icon.src = chrome.runtime.getURL(unlocked ? 'icons/unlocked.svg' : 'icons/locked.svg');
+  } catch (e) { icon.removeAttribute('src'); }
+  text.textContent = unlocked ? _('stateUnlocked','Tips ready') : _('stateLocked','Waiting for tips');
+}
+
 function buildLink(href, text, id) {
   const a = document.createElement('a');
   a.className = 'btn';
@@ -42,6 +56,7 @@ async function loadAlternates(domain) {
 (async function main() {
   const { url, err } = parseHash();
   const domain = hostname(url);
+  setStateIndicator(false);
   document.getElementById('meta').textContent = `${_('labelURL','URL')}: ${url} · ${_('labelError','Error')}: ${err || _('labelUnknown','unknown')}`;
 
   const quick = document.getElementById('quick');
@@ -79,6 +94,7 @@ async function loadAlternates(domain) {
       li.appendChild(a); list.appendChild(li);
     });
   }
+  setStateIndicator(alts.length > 0);
 
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');

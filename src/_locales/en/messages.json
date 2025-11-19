@@ -125,7 +125,28 @@
   "prefShowBookmarks": {
     "message": "Show bookmarks on SERP"
   },
+  "panelModeLabel": {
+    "message": "SERP panel mode"
+  },
+  "panelModeIcon": {
+    "message": "Badge only (hide panel)"
+  },
+  "panelModeChip": {
+    "message": "Badge + compact chip"
+  },
+  "panelModeAuto": {
+    "message": "Badge + expanded panel"
+  },
   "settingsTitle": {
     "message": "Unlock.SBS — settings"
+  },
+  "chipLabel": {
+    "message": "Unlock.SBS"
+  },
+  "stateLocked": {
+    "message": "Waiting for tips"
+  },
+  "stateUnlocked": {
+    "message": "Tips ready"
   }
 }

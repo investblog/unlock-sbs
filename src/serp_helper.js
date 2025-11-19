@@ -47,12 +47,59 @@ function toHost(input){ return toHref(input).host; }
   }
 
   // --- prefs & helpers ---
-  const DEFAULT_PREFS = { minToken: 2, showSerpBookmarks: true, showBadge: true, useUnicodeTokenize: true };
+  const DEFAULT_PREFS = { minToken: 2, showSerpBookmarks: true, showBadge: true, useUnicodeTokenize: true, panelMode: 'chip' };
   const TLD_STOP = new Set(['www','com','ru','net','org','info','io','co','app','dev','site','online','top','xyz']);
   const RU_TO_LAT = { 'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'c','ч':'ch','ш':'sh','щ':'shch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya' };
   function ruToLat(s){ return String(s||'').toLowerCase().replace(/[\u0400-\u04FF]/g, ch => RU_TO_LAT[ch] ?? ch); }
 
   let __prefs = DEFAULT_PREFS;
+  const BRAND_ICON_URL = (()=>{ try { return chrome.runtime.getURL('icons/brand.svg'); } catch(e){ return ''; } })();
+  const PANEL_STYLE_ID = 'ah-serp-style';
+
+  function normalizePanelMode(mode){
+    if (mode === 'icon' || mode === 'auto') return mode;
+    return 'chip';
+  }
+
+  function ensurePanelStyles(){
+    if (document.getElementById(PANEL_STYLE_ID)) return;
+    const style = document.createElement('style');
+    style.id = PANEL_STYLE_ID;
+    style.textContent = `
+      #ah-serp { position: fixed; top: 16px; right: 16px; z-index: 2147483647; font-family: Roboto, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif; color:#e7ecf3; display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+      #ah-serp * { box-sizing: border-box; font-family: inherit; }
+      #ah-serp .ah-chip { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; border:1px solid #223052; background:#121a2b; color:#e7ecf3; cursor:pointer; box-shadow:0 6px 20px rgba(0,0,0,.25); font-weight:600; font-size:13px; }
+      #ah-serp .ah-chip:focus-visible { outline:2px solid #4c8dff; outline-offset:2px; }
+      #ah-serp .ah-chip-icon { width:18px; height:18px; display:inline-flex; color:#e7ecf3; }
+      #ah-serp .ah-chip-icon img { width:100%; height:100%; display:block; }
+      #ah-serp .ah-panel { background:#121a2b; color:#e7ecf3; border:1px solid #223052; border-radius:12px; padding:12px 14px; box-shadow:0 6px 20px rgba(0,0,0,.25); width: min(560px, calc(100vw - 32px)); }
+      #ah-serp .ah-panel-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:4px; }
+      #ah-serp .ah-panel-title { font-weight:600; font-size:14px; }
+      #ah-serp .ah-panel-close { width:28px; height:28px; border:1px solid #2b3a5f; background:#1a2440; color:#e7ecf3; border-radius:6px; cursor:pointer; font-size:16px; line-height:26px; padding:0; }
+      #ah-serp .ah-panel-body { font-size:13px; line-height:1.5; }
+      #ah-serp .ah-panel-actions { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+      #ah-serp .ah-panel-actions button { font-size:12px; padding:6px 10px; background:#1a2440; color:#e7ecf3; border:1px solid #2b3a5f; border-radius:8px; cursor:pointer; }
+      #ah-serp .ah-section { display:none; margin:6px 0 4px; }
+      #ah-serp .ah-section.active { display:block; }
+      #ah-serp .ah-pill-row { display:flex; flex-wrap:wrap; gap:8px; }
+      #ah-serp.ah-serp-expanded .ah-panel { display:block; }
+      #ah-serp.ah-serp-expanded .ah-chip { display:none; }
+      #ah-serp:not(.ah-serp-expanded) .ah-panel { display:none; }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  function setPanelExpanded(el, expanded){ if (!el) return; if (expanded) el.classList.add('ah-serp-expanded'); else el.classList.remove('ah-serp-expanded'); }
+  function collapsePanel(el){ setPanelExpanded(el, false); }
+  function expandPanel(el){ setPanelExpanded(el, true); }
+  function updateChipCount(el, count){ if (!el) return; const target = el.querySelector('#ah-chip-count'); if (target) target.textContent = String(Math.max(0, parseInt(count,10)||0)); }
+  function setBadgeCount(count){
+    try {
+      if (!__prefs || __prefs.showBadge !== false) {
+        chrome.runtime.sendMessage({ type: 'ah:set-badge', count: Math.max(0, parseInt(count, 10) || 0) });
+      }
+    } catch(e){}
+  }
 
   function tokenizeQuery(q){
     const str = String(q || '').toLowerCase();
@@ -93,27 +140,37 @@ function toHost(input){ return toHref(input).host; }
 
   // --- UI helpers ---
   function injectPanel() {
+    ensurePanelStyles();
     let el = document.getElementById('ah-serp');
     if (el) return el;
     const box = document.createElement('div');
+    const chipLabel = _('chipLabel', 'Unlock.SBS');
     box.innerHTML = `
-      <div id="ah-serp" style="position: relative; 
-        position: fixed; bottom: 16px; left: 16px; z-index: 999999;
-        background:#121a2b; color:#e7ecf3; border:1px solid #223052; border-radius:12px;
-        padding:12px 14px; box-shadow:0 6px 20px rgba(0,0,0,.25); max-width: 600px; font-family: Roboto, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;">
-        <button id="ah-close-x" aria-label="${_('serpHide','Hide')}" style="position:absolute; right:8px; top:8px; width:28px; height:28px; border:1px solid #2b3a5f; background:#1a2440; color:#e7ecf3; border-radius:6px; cursor:pointer; line-height:26px; font-size:16px;">×</button><div style="font-weight:600; margin-bottom:6px; padding-right:32px;">${_('serpPanelTitle','Search tips')}</div>
-        <div id="ah-mirrors" style="display:none; margin:6px 0 4px;"></div>
-        <div id="ah-bookmarks" style="display:none; margin:6px 0 4px;"></div>
-        <div id="ah-body" style="font-size:13px; line-height:1.5"></div>
-        <div id="ah-actions" style="margin-top:8px; display:flex; gap:8px;">
-          <button id="ah-settings" style="font-size:12px; padding:6px 10px; background:#1a2440; color:#e7ecf3; border:1px solid #2b3a5f; border-radius:8px; cursor:pointer">${_('settingsBtn','Settings')}</button>
-          <button id="ah-close" style="font-size:12px; padding:6px 10px; background:#1a2440; color:#e7ecf3; border:1px solid #2b3a5f; border-radius:8px; cursor:pointer">${_('serpHide','Hide')}</button>
+      <div id="ah-serp">
+        <button id="ah-chip" class="ah-chip" type="button" aria-label="${_('serpPanelTitle','Search tips')}">
+          <span class="ah-chip-icon">${BRAND_ICON_URL ? `<img src="${BRAND_ICON_URL}" alt="" />` : ''}</span>
+          <span class="ah-chip-text">${chipLabel} · <span id="ah-chip-count">0</span></span>
+        </button>
+        <div class="ah-panel">
+          <div class="ah-panel-header">
+            <div class="ah-panel-title">${_('serpPanelTitle','Search tips')}</div>
+            <button id="ah-close-x" class="ah-panel-close" type="button" aria-label="${_('serpHide','Hide')}">×</button>
+          </div>
+          <div id="ah-mirrors" class="ah-section"></div>
+          <div id="ah-bookmarks" class="ah-section"></div>
+          <div id="ah-body" class="ah-panel-body"></div>
+          <div id="ah-actions" class="ah-panel-actions">
+            <button id="ah-settings" type="button">${_('settingsBtn','Settings')}</button>
+            <button id="ah-close" type="button">${_('serpHide','Hide')}</button>
+          </div>
         </div>
       </div>`;
     el = box.firstElementChild;
     document.documentElement.appendChild(el);
-    el.querySelector('#ah-close').addEventListener('click', () => el.remove());
-    const cx = el.querySelector('#ah-close-x'); if (cx) cx.addEventListener('click', ()=> el.remove());
+    const chip = el.querySelector('#ah-chip'); if (chip) chip.addEventListener('click', () => expandPanel(el));
+    const collapse = () => collapsePanel(el);
+    const cx = el.querySelector('#ah-close-x'); if (cx) cx.addEventListener('click', collapse);
+    const closeBtn = el.querySelector('#ah-close'); if (closeBtn) closeBtn.addEventListener('click', collapse);
     const sb = el.querySelector('#ah-settings');
     if (sb) sb.addEventListener('click', ()=>{ try{ chrome.runtime.sendMessage({type:'ah:open-settings'}); }catch(e){} });
     return el;
@@ -152,41 +209,54 @@ function toHost(input){ return toHref(input).host; }
       for (const d of domainTokens){ if (map[d] && !matchedKeys.includes(d)) matchedKeys.push(d); }
 
       const existing = document.getElementById('ah-serp');
-      if (!matchedKeys.length) { try{ if(!__prefs || __prefs.showBadge!==false) chrome.runtime.sendMessage({type:'ah:set-badge', count: 0}); }catch(e){} if (existing) existing.remove(); return; }
+      if (!matchedKeys.length) { setBadgeCount(0); if (existing) existing.remove(); return; }
 
-      const el = injectPanel();
-      const body = el.querySelector('#ah-body');
+      const panelMode = normalizePanelMode((__prefs && __prefs.panelMode) || 'chip');
+      const shouldRenderPanel = panelMode !== 'icon';
+      let el = null;
+      let body = null;
+      let mirrorsWrap = null;
+      let bmWrap = null;
+      if (shouldRenderPanel) {
+        el = injectPanel();
+        setPanelExpanded(el, panelMode === 'auto');
+        body = el.querySelector('#ah-body');
+        mirrorsWrap = el.querySelector('#ah-mirrors'); if (mirrorsWrap) { mirrorsWrap.innerHTML=''; mirrorsWrap.classList.remove('active'); }
+        bmWrap = el.querySelector('#ah-bookmarks'); if (bmWrap) { bmWrap.innerHTML=''; bmWrap.classList.remove('active'); }
+      } else if (existing) {
+        existing.remove();
+      }
 
-      // Mirrors render
-      const mirrorsWrap = el.querySelector('#ah-mirrors');
-      mirrorsWrap.innerHTML = '';
-      let showedMirrors = false;
-      matchedKeys.forEach((key) => {
-        const alts = (map[key] || map[key.replace(/^www\./,'')]) || [];
-        if (Array.isArray(alts) && alts.length) {
-          if (!showedMirrors) {
-            showedMirrors = true;
-            mirrorsWrap.style.display='block';
-            const label = document.createElement('div');
-            label.style.cssText='font-size:13px; color:#a9b4c7; margin-bottom:6px;';
-            label.textContent = `${_('serpTipAlternates','Official alternates from your settings:')} ${key}:`;
-            mirrorsWrap.appendChild(label);
+      let tipCount = matchedKeys.length;
+      setBadgeCount(tipCount);
+      if (shouldRenderPanel && el) updateChipCount(el, tipCount);
+
+      if (shouldRenderPanel && mirrorsWrap) {
+        let showedMirrors = false;
+        matchedKeys.forEach((key) => {
+          const alts = (map[key] || map[key.replace(/^www\./,'')]) || [];
+          if (Array.isArray(alts) && alts.length) {
+            if (!showedMirrors) {
+              showedMirrors = true;
+              mirrorsWrap.classList.add('active');
+              const label = document.createElement('div');
+              label.style.cssText='font-size:13px; color:#a9b4c7; margin-bottom:6px;';
+              label.textContent = `${_('serpTipAlternates','Official alternates from your settings:')} ${key}:`;
+              mirrorsWrap.appendChild(label);
+            }
+            const row = document.createElement('div');
+            row.className = 'ah-pill-row';
+            alts.forEach(a => {
+              const obj = toHref(a);
+              const pill = document.createElement('span');
+              pill.innerHTML = makePillLink(obj.href, obj.host);
+              const anchor = pill.firstChild; if (anchor && anchor.tagName==='A') anchor.title = obj.href; row.appendChild(anchor);
+            });
+            mirrorsWrap.appendChild(row);
           }
-          const row = document.createElement('div');
-          row.style.cssText='display:flex; flex-wrap:wrap; gap:8px;';
-          alts.forEach(a => {
-            const obj = toHref(a);
-            const pill = document.createElement('span');
-            pill.innerHTML = makePillLink(obj.href, obj.host);
-            const anchor = pill.firstChild; if (anchor && anchor.tagName==='A') anchor.title = obj.href; row.appendChild(anchor);
-          });
-          mirrorsWrap.appendChild(row);
-        }
-      });
+        });
+      }
 
-      // Bookmarks render
-      const bmWrap = el.querySelector('#ah-bookmarks');
-      bmWrap.innerHTML = '';
       if (!__prefs || __prefs.showSerpBookmarks !== false) {
         fetchBookmarksOnce().then(list => {
           try {
@@ -200,7 +270,7 @@ function toHost(input){ return toHref(input).host; }
             });
             slds.forEach(addKw);
 
-            const hits = [];
+            const bookmarkHits = [];
             const seen = new Set();
             for (const n of list) {
               const url = n.url || '';
@@ -209,20 +279,23 @@ function toHost(input){ return toHref(input).host; }
               let ok = false; for (const k of kw){ if (k && lcurl.includes(k)) { ok=true; break; } }
               if (!ok) continue;
               const key = `${n.title}|${url}`; if (seen.has(key)) continue; seen.add(key);
-              hits.push({ title: n.title || url, url });
-              if (hits.length >= 6) break;
+              bookmarkHits.push({ title: n.title || url, url });
+              if (bookmarkHits.length >= 6) break;
             }
 
-            try{ if(!__prefs || __prefs.showBadge!==false) chrome.runtime.sendMessage({type:'ah:set-badge', count: hits.length}); }catch(e){}
-            if (hits.length) {
-              bmWrap.style.display='block';
+            tipCount = matchedKeys.length + bookmarkHits.length;
+            setBadgeCount(tipCount);
+            if (shouldRenderPanel && el) updateChipCount(el, tipCount);
+
+            if (bookmarkHits.length && shouldRenderPanel && bmWrap) {
+              bmWrap.classList.add('active');
               const label = document.createElement('div');
               label.style.cssText='font-size:13px; color:#a9b4c7; margin-bottom:6px;';
               label.textContent = _(`bookmarksHeading`,`Related bookmarks`);
               bmWrap.appendChild(label);
               const row = document.createElement('div');
-              row.style.cssText='display:flex; flex-wrap:wrap; gap:8px;';
-              hits.forEach(h => {
+              row.className = 'ah-pill-row';
+              bookmarkHits.forEach(h => {
                 const a = document.createElement('a');
                 a.href = h.url; a.target='_blank'; a.rel='noreferrer'; a.title = h.url;
                 a.style.cssText='display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #2b3a5f;border-radius:999px;background:#1a2440;color:#a8c6ff;text-decoration:none;cursor:pointer;max-width:260px;font-size:12px;';
@@ -238,24 +311,25 @@ function toHost(input){ return toHref(input).host; }
         });
       }
 
-      // Instructions text
-      const tips = [];
-      tips.push(_(`serpTipCheck`, 'Check spelling, try a more precise phrase, or use quotes for exact match.'));
-      const host = location.host;
-      const isYandex = /^yandex\./i.test(host) || /(^|\.)ya\.ru$/i.test(host);
-      if (!isYandex && domainTokens.length) {
-        const d = domainTokens[0];
-        const hasSiteOrHost = /\b(?:site|host):\S+/i.test(q);
-        if (!hasSiteOrHost) {
-          const cleanedOnce = q.replace(/\b(?:site|host):\S+/gi, ' ').trim();
-          const escapedD = d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const cleaned = cleanedOnce.replace(new RegExp(escapedD, 'gi'), ' ').replace(/\s{2,}/g, ' ').trim();
-          const newQ = cleaned ? `site:${d} ${cleaned}` : `site:${d}`;
-          tips.push(`${_('serpTipRestrict','Try restricting the search to domain:')} <span>${makePlainLink(`https://www.google.com/search?q=${encodeURIComponent(newQ)}`, `site:${d}`)}</span>.`);
+      if (shouldRenderPanel && body) {
+        const tips = [];
+        tips.push(_(`serpTipCheck`, 'Check spelling, try a more precise phrase, or use quotes for exact match.'));
+        const host = location.host;
+        const isYandex = /^yandex\./i.test(host) || /(^|\.)ya\.ru$/i.test(host);
+        if (!isYandex && domainTokens.length) {
+          const d = domainTokens[0];
+          const hasSiteOrHost = /\b(?:site|host):\S+/i.test(q);
+          if (!hasSiteOrHost) {
+            const cleanedOnce = q.replace(/\b(?:site|host):\S+/gi, ' ').trim();
+            const escapedD = d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const cleaned = cleanedOnce.replace(new RegExp(escapedD, 'gi'), ' ').replace(/\s{2,}/g, ' ').trim();
+            const newQ = cleaned ? `site:${d} ${cleaned}` : `site:${d}`;
+            tips.push(`${_('serpTipRestrict','Try restricting the search to domain:')} <span>${makePlainLink(`https://www.google.com/search?q=${encodeURIComponent(newQ)}`, `site:${d}`)}</span>.`);
+          }
         }
+        tips.push(`${_('serpTipArchive','See archived copies:')} ${makePlainLink('https://web.archive.org/', 'Wayback Machine')}.`);
+        body.innerHTML = tips.map(t => `<div style="margin:4px 0">${t}</div>`).join('');
       }
-      tips.push(`${_('serpTipArchive','See archived copies:')} ${makePlainLink('https://web.archive.org/', 'Wayback Machine')}.`);
-      body.innerHTML = tips.map(t => `<div style="margin:4px 0">${t}</div>`).join('');
     });
   }
 
