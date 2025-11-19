@@ -59,24 +59,24 @@ function render(map){
   const list = $('#list'); list.innerHTML='';
   const entries = Object.entries(map).sort(([a],[b])=>a.localeCompare(b));
   for (const [dom, alts] of entries){
-    const wrap = document.createElement('div'); wrap.className='item';
-    const left = document.createElement('div'); left.className='domain'; left.textContent = dom;
-    const mid = document.createElement('div'); mid.className='alts';
+    const wrap = document.createElement('div'); wrap.className='ah-list-item';
+    const left = document.createElement('div'); left.className='ah-domain'; left.textContent = dom;
+    const mid = document.createElement('div'); mid.className='ah-pill-row';
     (Array.isArray(alts)?alts:[]).forEach(a => {
       const clean = String(a).replace(/^https?:\/\//,'');
       const link = document.createElement('a');
-      link.href = `https://${clean}`; link.target='_blank'; link.rel='noreferrer'; link.className='pill';
-      link.innerHTML = `${a} <span class="arrow">⭢</span>`;
+      link.href = `https://${clean}`; link.target='_blank'; link.rel='noreferrer'; link.className='ah-pill';
+      link.innerHTML = `${a} <span class="ah-pill-arrow">⭢</span>`;
       mid.appendChild(link);
     });
     const right = document.createElement('div');
-    const del = document.createElement('button'); del.className='btn';
+    const del = document.createElement('button'); del.className='ah-btn ah-btn-outline'; del.type='button';
     del.textContent = chrome.i18n.getMessage('deleteBtn') || 'Delete';
     del.addEventListener('click', async ()=>{ const cur = await getMap(); delete cur[dom]; await saveMap(cur); CACHE=cur; applyFilterAndRender(); });
     right.appendChild(del);
     wrap.append(left, mid, right); list.appendChild(wrap);
   }
-  if (!entries.length){ const empty=document.createElement('div'); empty.className='muted'; empty.textContent = chrome.i18n.getMessage('listEmpty') || 'List is empty.'; list.appendChild(empty); }
+  if (!entries.length){ const empty=document.createElement('div'); empty.className='ah-muted'; empty.textContent = chrome.i18n.getMessage('listEmpty') || 'List is empty.'; list.appendChild(empty); }
 }
 
 // Bookmarks fetch & render
@@ -102,7 +102,7 @@ function renderBookmarks(tokens){
   if (!sec || !box) return;
   fetchBookmarks().then(list => {
     box.innerHTML='';
-    if (!tokens || !tokens.length){ sec.style.display='none'; return; }
+    if (!tokens || !tokens.length){ sec.classList.add('is-hidden'); return; }
     const hits=[]; const seen=new Set();
     const kw = new Set(tokens);
     const add = (v)=>{ const s=String(v||'').toLowerCase(); if(s){ kw.add(s); const t=ruToLat(s); if(t && t!==s) kw.add(t);} };
@@ -116,14 +116,14 @@ function renderBookmarks(tokens){
       hits.push({ title: n.title || url, url });
       if (hits.length >= 10) break;
     }
-    if (!hits.length){ sec.style.display='none'; return; }
-    sec.style.display='';
+    if (!hits.length){ sec.classList.add('is-hidden'); return; }
+    sec.classList.remove('is-hidden');
     hits.forEach(h=>{
-      const a=document.createElement('a'); a.className='pill'; a.href=h.url; a.target='_blank'; a.rel='noreferrer';
-      const img=document.createElement('img'); img.src=`${(function(){try{return 'https://icons.duckduckgo.com/ip3/'+(new URL(h.url).hostname)+'.ico'}catch(e){return ''}})()}`; img.width=16; img.height=16; img.className='bookmark-favicon';
+      const a=document.createElement('a'); a.className='ah-pill ah-pill-rich'; a.href=h.url; a.target='_blank'; a.rel='noreferrer';
+      const img=document.createElement('img'); img.src=`${(function(){try{return 'https://icons.duckduckgo.com/ip3/'+(new URL(h.url).hostname)+'.ico'}catch(e){return ''}})()}`; img.width=16; img.height=16; img.className='ah-pill-icon';
       const span=document.createElement('span'); const t=h.title && h.title.trim()?h.title.trim(): (new URL(h.url).hostname);
       span.textContent = t.length>28 ? t.slice(0,25)+'…' : t;
-      const arrow=document.createElement('span'); arrow.textContent='⭢'; arrow.className='arrow';
+      const arrow=document.createElement('span'); arrow.textContent='⭢'; arrow.className='ah-pill-arrow';
       a.append(img, span, arrow); box.appendChild(a);
     });
   });
