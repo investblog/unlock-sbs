@@ -16,24 +16,11 @@
     --ah-muted: #9BA3B4;
     --ah-accent: #5E8BFF;
     --ah-accent-soft: rgba(94,139,255,.16);
-    --ah-color-icon-main: var(--ah-accent);
-    --ah-color-icon-soft: #9CA3FF;
-    --ah-color-icon-ok: #25D0A4;
-    --ah-color-icon-warn: #FACC15;
     --ah-radius: 12px;
     --ah-radius-pill: 999px;
     --ah-shadow-soft: 0 18px 45px rgba(0,0,0,.55);
     --ah-font: system-ui, -apple-system, "Segoe UI", sans-serif;
     --ah-font-size: 13px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --ah-color-icon-main: #A5B8FF;
-      --ah-color-icon-soft: #7C82FF;
-      --ah-color-icon-ok: #34D399;
-      --ah-color-icon-warn: #FBBF24;
-    }
   }
   * { box-sizing: border-box; }
   body {
@@ -73,6 +60,22 @@
     gap: 6px;
     margin-bottom: 18px;
   }
+  .ah-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .ah-heading-text {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .ah-heading-link {
+    color: var(--ah-muted);
+    font-size: 12px;
+    text-decoration: none;
+  }
+  .ah-heading-link:hover { color: var(--ah-accent); text-decoration: underline; }
   .ah-page-header h1 {
     margin: 0;
     font-size: 24px;
@@ -180,16 +183,9 @@
     width: 100%;
     height: 100%;
     display: block;
-    fill: currentColor;
-    stroke: currentColor;
   }
   .ah-icon--sm { width: 14px; height: 14px; }
   .ah-icon--lg { width: 20px; height: 20px; }
-  .ah-icon--main  { color: var(--ah-color-icon-main); }
-  .ah-icon--soft  { color: var(--ah-color-icon-soft); }
-  .ah-icon--ok    { color: var(--ah-color-icon-ok); }
-  .ah-icon--warn  { color: var(--ah-color-icon-warn); }
-  .ah-icon--muted { color: var(--ah-muted); }
   .ah-actions-row {
     display: flex;
     flex-wrap: wrap;
@@ -361,13 +357,10 @@
   .ah-panel-note { color: var(--ah-muted); font-size: 13px; margin-top: 8px; }
   .ah-settings-card-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
   }
-  .ah-settings-card-header .ah-icon {
-    color: var(--ah-color-icon-main);
-    margin-right: 0;
-  }
+  .ah-settings-card-header .ah-icon { margin-right: 0; }
   @media (max-width: 960px) {
     .ah-card { padding: 24px 22px; }
   }
@@ -383,9 +376,12 @@
   <div class="ah-shell">
     <div class="ah-card ah-options-card">
       <header class="ah-page-header">
-        <h1>
+        <h1 class="ah-heading">
           <span class="ah-icon ah-icon--main" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
-          <span data-i18n="optTitle">Unlock.SBS — настройки (Access Helper)</span>
+          <span class="ah-heading-text">
+            <span data-i18n="optTitle">Unlock.SBS — настройки (Access Helper)</span>
+            <a class="ah-heading-link" href="https://unlock.sbs" target="_blank" rel="noreferrer">Unlock.SBS →</a>
+          </span>
         </h1>
         <p class="ah-page-subtitle" data-i18n="appDesc">Подсказки, официальные зеркала и похожие закладки прямо на странице выдачи.</p>
       </header>
@@ -393,7 +389,10 @@
       <section class="ah-section ah-card-soft">
         <div class="ah-section-title ah-settings-card-header">
           <span class="ah-icon ah-icon--main" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
-          <span data-i18n="domainsHeading">Управление доменами</span>
+          <span class="ah-heading-text">
+            <span data-i18n="domainsHeading">Управление доменами</span>
+            <a class="ah-heading-link" href="https://unlock.sbs" target="_blank" rel="noreferrer">Unlock.SBS →</a>
+          </span>
         </div>
         <div class="ah-field-grid">
           <label class="ah-field">
@@ -418,7 +417,10 @@
       <section class="ah-section ah-card-soft" id="prefs">
         <div class="ah-section-title ah-settings-card-header">
           <span class="ah-icon ah-icon--main" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
-          <span data-i18n="prefsHeading">Расширенные настройки</span>
+          <span class="ah-heading-text">
+            <span data-i18n="prefsHeading">Расширенные настройки</span>
+            <a class="ah-heading-link" href="https://unlock.sbs" target="_blank" rel="noreferrer">Unlock.SBS →</a>
+          </span>
         </div>
         <div class="ah-prefs-grid">
           <label class="ah-range">
@@ -462,7 +464,10 @@
           <div class="panel-mode">
             <div class="ah-label">
               <span class="ah-icon ah-icon--ok ah-icon--sm" aria-hidden="true"><img src="icons/unlocked.svg" alt=""></span>
-              <span data-i18n="panelModeLabel">Режим панели на SERP</span>
+              <span class="ah-heading-text">
+                <span data-i18n="panelModeLabel">Режим панели на SERP</span>
+                <a class="ah-heading-link" href="https://unlock.sbs" target="_blank" rel="noreferrer">Unlock.SBS →</a>
+              </span>
             </div>
             <div class="ah-radio-group">
               <label class="ah-radio-pill">
@@ -482,7 +487,10 @@
         <label class="ah-field">
           <span class="ah-label ah-settings-card-header">
             <span class="ah-icon ah-icon--main ah-icon--sm" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
-            <span data-i18n="searchLabel">Поиск по доменам</span>
+            <span class="ah-heading-text">
+              <span data-i18n="searchLabel">Поиск по доменам</span>
+              <a class="ah-heading-link" href="https://unlock.sbs" target="_blank" rel="noreferrer">Unlock.SBS →</a>
+            </span>
           </span>
           <input id="search" class="ah-input" placeholder="..." data-i18n-placeholder="searchPlaceholder" />
         </label>

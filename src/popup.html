@@ -16,24 +16,11 @@
     --ah-muted: #9BA3B4;
     --ah-accent: #5E8BFF;
     --ah-accent-soft: rgba(94,139,255,.16);
-    --ah-color-icon-main: var(--ah-accent);
-    --ah-color-icon-soft: #9CA3FF;
-    --ah-color-icon-ok: #25D0A4;
-    --ah-color-icon-warn: #FACC15;
     --ah-radius: 12px;
     --ah-radius-pill: 999px;
     --ah-shadow-soft: 0 18px 45px rgba(0,0,0,.55);
     --ah-font: system-ui, -apple-system, "Segoe UI", sans-serif;
     --ah-font-size: 13px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --ah-color-icon-main: #A5B8FF;
-      --ah-color-icon-soft: #7C82FF;
-      --ah-color-icon-ok: #34D399;
-      --ah-color-icon-warn: #FBBF24;
-    }
   }
   * { box-sizing: border-box; }
   body {
@@ -58,6 +45,22 @@
     gap: 4px;
     margin-bottom: 14px;
   }
+  .ah-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .ah-heading-text {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .ah-heading-link {
+    color: var(--ah-muted);
+    font-size: 12px;
+    text-decoration: none;
+  }
+  .ah-heading-link:hover { color: var(--ah-accent); text-decoration: underline; }
   .popup-header h1 {
     margin: 0;
     font-size: 18px;
@@ -119,16 +122,9 @@
     width: 100%;
     height: 100%;
     display: block;
-    fill: currentColor;
-    stroke: currentColor;
   }
   .ah-icon--sm { width: 14px; height: 14px; }
   .ah-icon--lg { width: 20px; height: 20px; }
-  .ah-icon--main  { color: var(--ah-color-icon-main); }
-  .ah-icon--soft  { color: var(--ah-color-icon-soft); }
-  .ah-icon--ok    { color: var(--ah-color-icon-ok); }
-  .ah-icon--warn  { color: var(--ah-color-icon-warn); }
-  .ah-icon--muted { color: var(--ah-muted); }
   .popup-actions { display: flex; flex-wrap: wrap; gap: 8px; }
   .ah-toggle {
     display: flex;
@@ -205,9 +201,12 @@
 <body>
   <div class="popup-root">
     <header class="popup-header">
-      <h1>
+      <h1 class="ah-heading">
         <span class="ah-icon ah-icon--main ah-icon--lg" aria-hidden="true"><img src="icons/brand.svg" alt=""></span>
-        <span>Unlock.SBS</span>
+        <span class="ah-heading-text">
+          <span>Unlock.SBS</span>
+          <a class="ah-heading-link" href="https://unlock.sbs" target="_blank" rel="noreferrer">Unlock.SBS →</a>
+        </span>
       </h1>
       <p class="popup-subtitle">Быстрые действия и подсказки (Access Helper).</p>
     </header>
