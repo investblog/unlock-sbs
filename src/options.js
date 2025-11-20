@@ -1,6 +1,21 @@
 
 const $ = (s) => document.querySelector(s);
 
+let MSG_TIMER = null;
+function showInlineMessage(text){
+  const box = document.querySelector('#ah-inline-msg');
+  if (!box) return;
+  if (MSG_TIMER) clearTimeout(MSG_TIMER);
+  if (text) {
+    box.textContent = text;
+    box.classList.add('is-visible');
+    MSG_TIMER = setTimeout(() => { box.classList.remove('is-visible'); box.textContent=''; }, 5000);
+  } else {
+    box.textContent = '';
+    box.classList.remove('is-visible');
+  }
+}
+
 // Transliteration & matching utilities
 const RU_TO_LAT = { 'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'c','ч':'ch','ш':'sh','щ':'shch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya' };
 function ruToLat(s){ return String(s||'').toLowerCase().replace(/[\u0400-\u04FF]/g, ch => RU_TO_LAT[ch] ?? ch); }
@@ -140,6 +155,53 @@ function applyFilterAndRender(){
   render(subset); renderBookmarks(TOKENS);
 }
 
+function parseAlternatesPayload(obj){
+  const entries = [];
+  const pushEntry = (rawKey, rawAlts) => {
+    const key = normalizeKeyDomain(rawKey); if (!key) return;
+    const arr = Array.isArray(rawAlts) ? rawAlts.map(s => normalizeAlt(s)).filter(Boolean) : [];
+    if (!arr.length) return;
+    entries.push({ key, alts: Array.from(new Set(arr)) });
+  };
+
+  if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+    for (const [k, v] of Object.entries(obj)) { pushEntry(k, v); }
+  } else if (Array.isArray(obj)) {
+    for (const item of obj) {
+      if (Array.isArray(item) && item.length>=2) {
+        pushEntry(item[0], item[1]);
+      } else if (item && typeof item === 'object') {
+        pushEntry(item.domain || item.key || '', item.alternates || item.values || item.alts);
+      }
+    }
+  }
+  return entries;
+}
+
+async function importAlternatesPayload(payload, opts = {}){
+  const { skipExistingDomains = false, strict = false } = opts;
+  const entries = parseAlternatesPayload(payload);
+  if (strict && !entries.length) throw new Error('Invalid alternates payload');
+  if (!entries.length) return { addedDomains: 0 };
+  const current = await getMap();
+  const next = { ...current };
+  let addedDomains = 0;
+
+  for (const { key, alts } of entries){
+    if (!key || !alts.length) continue;
+    if (skipExistingDomains && current[key]) continue;
+    const prev = Array.isArray(next[key]) ? next[key] : [];
+    const merged = Array.from(new Set([...prev, ...alts]));
+    if (!prev.length && merged.length) addedDomains += 1;
+    next[key] = merged;
+  }
+
+  await saveMap(next);
+  CACHE = next;
+  applyFilterAndRender();
+  return { addedDomains };
+}
+
 $('#add').addEventListener('click', async () => {
   const dom = normalizeKeyDomain($('#domain').value);
   const alts = ($('#alts').value || '').split(',').map(s => normalizeAlt(s)).filter(Boolean);
@@ -159,42 +221,39 @@ $('#importBtn').addEventListener('click', async () => {
       const f = input.files[0]; if (!f) return;
       const text = await f.text();
       const obj = JSON.parse(text);
-      const current = await getMap();
-      const next = { ...current };
-
-      if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
-        for (const [k, v] of Object.entries(obj)) {
-          const key = normalizeKeyDomain(k); if (!key) continue;
-          const arr = Array.isArray(v) ? v.map(s => normalizeAlt(s)).filter(Boolean) : [];
-          if (!arr.length) continue;
-          const prev = Array.isArray(next[key]) ? next[key] : [];
-          next[key] = Array.from(new Set([...prev, ...arr]));
-        }
-      } else if (Array.isArray(obj)) {
-        // accept [["example.com", ["alt1","https://..."]], ...] or [{domain, alternates}]
-        for (const item of obj) {
-          if (Array.isArray(item) && item.length>=2) {
-            const key = normalizeKeyDomain(item[0]); if (!key) continue;
-            const arr = Array.isArray(item[1]) ? item[1].map(s=>normalizeAlt(s)).filter(Boolean) : [];
-            if (!arr.length) continue;
-            const prev = Array.isArray(next[key]) ? next[key] : [];
-            next[key] = Array.from(new Set([...prev, ...arr]));
-          } else if (item && typeof item === 'object') {
-            const key = normalizeKeyDomain(item.domain || item.key || ''); if (!key) continue;
-            const arr = Array.isArray(item.alternates || item.values || item.alts) ? (item.alternates || item.values || item.alts).map(s=>normalizeAlt(s)).filter(Boolean) : [];
-            if (!arr.length) continue;
-            const prev = Array.isArray(next[key]) ? next[key] : [];
-            next[key] = Array.from(new Set([...prev, ...arr]));
-          }
-        }
-      }
-
-      await saveMap(next);
-      CACHE = next;
-      applyFilterAndRender();
+      await importAlternatesPayload(obj);
     } catch (e) { console.error('Import failed', e); }
   };
   input.click();
+});
+
+async function applyBundle(bundle){
+  const { addedDomains } = await importAlternatesPayload(bundle, { skipExistingDomains: true, strict: true });
+  const addedMsg = chrome.i18n.getMessage('bundleApplied', [String(addedDomains)]) || `Added ${addedDomains} new domains from sample.`;
+  const noneMsg = chrome.i18n.getMessage('bundleAppliedNone') || 'No new domains from the sample bundle.';
+  showInlineMessage(addedDomains > 0 ? addedMsg : noneMsg);
+}
+
+document.getElementById('ah-load-bundle')?.addEventListener('click', async () => {
+  try {
+    const remoteUrl = 'https://unlock.sbs/download/bundle.json';
+    const remoteData = await fetch(remoteUrl, { cache: 'no-store' }).then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+    await applyBundle(remoteData, { source: 'remote' });
+  } catch (e) {
+    try {
+      const localUrl = chrome.runtime.getURL('bundle.json');
+      const localData = await fetch(localUrl).then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      });
+      await applyBundle(localData, { source: 'local' });
+    } catch (e2) {
+      showInlineMessage(chrome.i18n.getMessage('bundleLoadFailed') || 'Не удалось загрузить пример бандла. Проверьте соединение.');
+    }
+  }
 });
 
 

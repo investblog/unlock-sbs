@@ -190,6 +190,8 @@
     margin-top: 14px;
   }
   .ah-muted { color: var(--ah-muted); }
+  .ah-inline-msg { display: none; margin-top: 6px; color: var(--ah-muted); }
+  .ah-inline-msg.is-visible { display: block; }
   .ah-muted.small { font-size: 12px; }
   .ah-list {
     margin-top: 14px;
@@ -404,8 +406,10 @@
         <div class="ah-actions-row">
           <button id="exportBtn" type="button" class="ah-btn ah-btn-outline"><span data-i18n="exportBtn">Экспорт JSON</span></button>
           <button id="importBtn" type="button" class="ah-btn ah-btn-outline"><span data-i18n="importBtn">Импорт JSON</span></button>
+          <button id="ah-load-bundle" type="button" class="ah-btn ah-btn-ghost"><span data-i18n="loadBundleBtn">Загрузить пример</span></button>
           <span class="ah-muted small" data-i18n="jsonFormatHelp">JSON формат: {"example.com":["example.org","https://ya.ru/internet"]}</span>
         </div>
+        <div id="ah-inline-msg" class="ah-inline-msg ah-muted small" role="status" aria-live="polite"></div>
       </section>
 
       <section class="ah-section ah-card-soft" id="prefs">
