@@ -44,6 +44,23 @@
     padding: 28px;
     text-align: center;
   }
+  .ah-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    justify-content: center;
+  }
+  .ah-heading-text {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .ah-heading-link {
+    color: var(--ah-muted);
+    font-size: 12px;
+    text-decoration: none;
+  }
+  .ah-heading-link:hover { color: var(--ah-accent); text-decoration: underline; }
   h1 { margin: 0 0 8px; font-size: 26px; }
   p { margin: 0 0 18px; color: var(--ah-muted); }
   .ah-card-soft {
@@ -82,14 +99,9 @@
     width: 100%;
     height: 100%;
     display: block;
-    fill: currentColor;
   }
   .ah-icon--sm { width: 14px; height: 14px; }
   .ah-icon--lg { width: 20px; height: 20px; }
-  .ah-icon--main  { color: var(--ah-accent); }
-  .ah-icon--ok    { color: #25D0A4; }
-  .ah-icon--warn  { color: #FF6B6B; }
-  .ah-icon--muted { color: var(--ah-muted); }
   .ah-pill {
     display: inline-flex;
     align-items: center;
@@ -107,9 +119,12 @@
 </head>
 <body>
   <div class="ah-card">
-    <h1>
+    <h1 class="ah-heading">
       <span class="ah-icon ah-icon--warn ah-icon--lg" aria-hidden="true"><img src="icons/locked.svg" alt=""></span>
-      <span>Нужна подсказка?</span>
+      <span class="ah-heading-text">
+        <span>Нужна подсказка?</span>
+        <a class="ah-heading-link" href="https://unlock.sbs" target="_blank" rel="noreferrer">Unlock.SBS →</a>
+      </span>
     </h1>
     <p>Используйте советы Unlock.SBS (Access Helper), похожие закладки и быстрые инструменты.</p>
     <div class="ah-card-soft">
