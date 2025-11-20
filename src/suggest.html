@@ -55,12 +55,6 @@
     flex-direction: column;
     gap: 2px;
   }
-  .ah-heading-link {
-    color: var(--ah-muted);
-    font-size: 12px;
-    text-decoration: none;
-  }
-  .ah-heading-link:hover { color: var(--ah-accent); text-decoration: underline; }
   h1 { margin: 0 0 8px; font-size: 26px; }
   p { margin: 0 0 18px; color: var(--ah-muted); }
   .ah-card-soft {
@@ -102,6 +96,8 @@
   }
   .ah-icon--sm { width: 14px; height: 14px; }
   .ah-icon--lg { width: 20px; height: 20px; }
+  .ah-icon-link { color: inherit; text-decoration: none; }
+  .ah-icon-link:hover { opacity: .92; }
   .ah-pill {
     display: inline-flex;
     align-items: center;
@@ -120,10 +116,9 @@
 <body>
   <div class="ah-card">
     <h1 class="ah-heading">
-      <span class="ah-icon ah-icon--warn ah-icon--lg" aria-hidden="true"><img src="icons/locked.svg" alt=""></span>
+      <a class="ah-icon ah-icon-link ah-icon--warn ah-icon--lg" href="https://unlock.sbs" target="_blank" rel="noreferrer" aria-label="Открыть Unlock.SBS"><img src="icons/locked.svg" alt=""></a>
       <span class="ah-heading-text">
         <span>Нужна подсказка?</span>
-        <a class="ah-heading-link" href="https://unlock.sbs" target="_blank" rel="noreferrer">Unlock.SBS →</a>
       </span>
     </h1>
     <p>Используйте советы Unlock.SBS (Access Helper), похожие закладки и быстрые инструменты.</p>

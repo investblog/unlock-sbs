@@ -127,6 +127,37 @@ function toHost(input){ return toHref(input).host; }
         --ah-shadow-soft: 0 18px 45px rgba(0,0,0,.55);
         --ah-font: system-ui, -apple-system, "Segoe UI", sans-serif;
         --ah-font-size: 13px;
+        --ah-chip-bg: rgba(15, 23, 42, 0.96);
+        --ah-chip-border: rgba(148, 163, 184, 0.6);
+        --ah-chip-text: #E5E7EB;
+        --ah-chip-badge-bg: linear-gradient(135deg, #9CB8FF 0%, #5E8BFF 65%);
+        --ah-chip-badge-tx: #0A1020;
+        --ah-chip-hover-bg: rgba(15, 20, 33, .95);
+        --ah-chip-hover-border: rgba(94, 139, 255, .6);
+        --ah-chip-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --ah-bg: #f8fafc;
+          --ah-bg-gradient: radial-gradient(circle at top left, #e2e8f0 0, #f8fafc 55%);
+          --ah-card: #ffffff;
+          --ah-card-soft: #f1f5f9;
+          --ah-border-subtle: rgba(15,23,42,.08);
+          --ah-border-strong: rgba(15,23,42,.16);
+          --ah-text: #0f172a;
+          --ah-muted: #475569;
+          --ah-accent: #2563eb;
+          --ah-accent-soft: rgba(37,99,235,.12);
+          --ah-shadow-soft: 0 16px 40px rgba(15,23,42,.12);
+          --ah-chip-bg: rgba(255, 255, 255, 0.98);
+          --ah-chip-border: rgba(15, 23, 42, 0.12);
+          --ah-chip-text: #0f172a;
+          --ah-chip-badge-bg: linear-gradient(135deg, #2563eb 0%, #1d4ed8 65%);
+          --ah-chip-badge-tx: #f8fafc;
+          --ah-chip-hover-bg: #e2e8f0;
+          --ah-chip-hover-border: rgba(37, 99, 235, 0.45);
+          --ah-chip-shadow: 0 10px 25px rgba(15,23,42,.12);
+        }
       }
       #ah-root {
         position: fixed;
@@ -198,12 +229,6 @@ function toHost(input){ return toHref(input).host; }
       .ah-icon--sm { width: 14px; height: 14px; }
       .ah-icon--lg { width: 20px; height: 20px; }
       .ah-serp-root .ah-chip {
-        --ah-chip-bg: rgba(15, 23, 42, 0.96);
-        --ah-chip-border: rgba(148, 163, 184, 0.6);
-        --ah-chip-text: #E5E7EB;
-        --ah-chip-badge-bg: linear-gradient(135deg, #9CB8FF 0%, #5E8BFF 65%);
-        --ah-chip-badge-tx: #0A1020;
-
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -215,11 +240,11 @@ function toHost(input){ return toHref(input).host; }
         backdrop-filter: blur(8px);
         color: var(--ah-chip-text);
         font-weight: 600;
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
+        box-shadow: var(--ah-chip-shadow);
       }
       .ah-serp-root .ah-chip:hover {
-        border-color: rgba(94, 139, 255, .6);
-        background: rgba(15, 20, 33, .95);
+        border-color: var(--ah-chip-hover-border);
+        background: var(--ah-chip-hover-bg);
       }
       .ah-serp-root .ah-chip:focus-visible { outline: 2px solid var(--ah-accent); outline-offset: 2px; }
       .ah-serp-root .ah-chip-text {
