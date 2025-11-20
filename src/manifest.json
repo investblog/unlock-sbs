@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "default_locale": "en",
   "permissions": [
     "bookmarks",
@@ -17,13 +17,14 @@
   "background": {
     "service_worker": "background.js"
   },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "icons/*.svg"
-      ],
-      "matches": ["<all_urls>"]
-    }
+ "web_accessible_resources": [
+  {
+    "resources": [
+      "icons/*.svg",
+      "bundle.json"
+    ],
+    "matches": ["<all_urls>"]
+  }
   ],
   "options_page": "options.html",
   "action": {
