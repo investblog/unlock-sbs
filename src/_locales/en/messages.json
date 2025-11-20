@@ -23,6 +23,9 @@
   "importBtn": {
     "message": "Import JSON"
   },
+  "loadBundleBtn": {
+    "message": "Load sample bundle"
+  },
   "jsonFormatHelp": {
     "message": "JSON format: {\"example.com\":[\"example.org\",\"example.net\"]}"
   },
@@ -97,6 +100,15 @@
   },
   "panelModeOpen": {
     "message": "Badge + expanded panel"
+  },
+  "bundleApplied": {
+    "message": "Added $1 new domains from the sample bundle"
+  },
+  "bundleAppliedNone": {
+    "message": "No new domains from the sample bundle"
+  },
+  "bundleLoadFailed": {
+    "message": "Could not load the sample bundle. Please check your connection."
   },
   "settingsTitle": {
     "message": "Unlock.SBS — settings"

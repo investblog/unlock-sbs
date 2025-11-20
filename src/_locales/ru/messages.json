@@ -23,6 +23,9 @@
   "importBtn": {
     "message": "Импорт JSON"
   },
+  "loadBundleBtn": {
+    "message": "Загрузить пример"
+  },
   "jsonFormatHelp": {
     "message": "JSON формат: {\"example.com\":[\"example.org\",\"https://ya.ru/internet\"]}"
   },
@@ -103,6 +106,15 @@
   },
   "prefShowBadge": {
     "message": "Значок с количеством подсказок"
+  },
+  "bundleApplied": {
+    "message": "Добавлено $1 новых доменов из примера"
+  },
+  "bundleAppliedNone": {
+    "message": "Новые домены из примера не найдены"
+  },
+  "bundleLoadFailed": {
+    "message": "Не удалось загрузить пример бандла. Проверьте соединение."
   },
   "domainsHeading": {
     "message": "Управление доменами"
